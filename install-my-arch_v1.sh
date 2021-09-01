@@ -447,9 +447,11 @@ else
  mkfs.ext4 -F /dev/$RDISP
 fi
 
-# Format boot
-mkfs.ext4 -F /dev/$BDISP
+# Format boot and EFI
 text g "\n[+] Formating Boot partition\n"
+mkfs.ext4 -F /dev/$BDISP
+text g "\n[+] arch label for Boot partition\n"
+tune2fs -L arch /dev/$BDISP
 # Check Efi flag before format
 [[ $EFIFLAG = "Yes" ]] && text g "\n[+] Formating Efi partition\n" && mkfs.vfat -F 32 /dev/$EDISP
 [[ $EFIFLAG = "No" ]] && text y "\n[+] Skiping Efi partition format\n"
@@ -606,7 +608,7 @@ $CHR "$INSTALL $PAC1"
 # User account
 if [[ -n $USR1 ]]; then
   text g "\n[+] Creating user $USR1 with common groups\n"
-  $CHR "useradd -m -g users -G wheel,power,storage -s /bin/bash $USR1"; sleep 2
+  $CHR "useradd -m -g users -G wheel,power,storage,input,wireshark -s /bin/bash $USR1"; sleep 2
   text g "\n[+] Setting password for $USR1\n"
   $CHR "echo $USR1:$PASS1 | chpasswd"
   text g "\n[+] Setting zshell for $USR1\n"
