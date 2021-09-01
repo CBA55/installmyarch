@@ -25,7 +25,7 @@ BASE="base base-devel linux linux-firmware lvm2 man man-pages git"
 XORG="xorg-server xorg-xinit xorg-server-common"
 # Drivers by installation profile
 DVRVMWARE="xf86-video-vmware xf86-input-vmmouse open-vm-tools"
-DVRNATIVE="xf86-video-intel nvidia nvidia-utils bumblebee bluedevil powerdevil pulseaudio plasma-pa"
+DVRNATIVE="xf86-video-intel nvidia nvidia-utils bumblebee bluedevil powerdevil pulseaudio pulseaudio-bluetooth plasma-pa"
 # My Enviroment packages
 ENV="plasma-desktop sddm sddm-kcm plasma-nm kscreen konsole dolphin dolphin-plugins ark"
 
