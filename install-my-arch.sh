@@ -14,8 +14,8 @@ PARTS=/tmp/parts.sh.$$
 LAYOUTS=/tmp/layouts.sh.$$
 
 # Get absolute paths for config files
-COM=$(echo $0 | sed 's/install-my-arch_v1.sh/com-packages.cfg/')
-AUR=$(echo $0 | sed 's/install-my-arch_v1.sh/aur-packages.cfg/')
+COM=$(echo $0 | sed 's/install-my-arch.sh/com-packages.cfg/')
+AUR=$(echo $0 | sed 's/install-my-arch.sh/aur-packages.cfg/')
 
 # trap and delete temp files
 trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; rm $SYSSEL; rm SYSERR; exit" SIGHUP SIGINT SIGTERM
