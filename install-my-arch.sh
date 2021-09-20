@@ -21,7 +21,7 @@ AUR=$(echo $0 | sed 's/install-my-arch.sh/aur-packages.cfg/')
 trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; rm $SYSSEL; rm SYSERR; exit" SIGHUP SIGINT SIGTERM
 
 # Main packages packages
-BASE="base base-devel linux linux-firmware lvm2 man man-pages git"
+BASE="base base-devel linux linux-firmware linux-headers lvm2 man man-pages git"
 XORG="xorg-server xorg-xinit xorg-server-common"
 # Drivers by installation profile
 DVRVMWARE="xf86-video-vmware xf86-input-vmmouse open-vm-tools"
@@ -572,6 +572,9 @@ if [ $TYPEFLAG = "Native" ]; then
   text g "\n[+] Enable Bluetooth service\n"
   $CHR "systemctl enable bluetooth"
   $CHR "systemctl enable bumblebeed"
+  if [[ -n $USR1 ]]; then
+   $CHR "gpasswd -a $USR1 bumblebee"
+  fi
 fi
 
 text g "\n[+] Installing Enviroment packages\n"
@@ -615,6 +618,9 @@ if [[ -n $USR1 ]]; then
   $CHR "chsh -s /bin/zsh $USR1"
   text g "\n[+] Setting basic config for Sudo\n"
   $CHR "sed -i '82 s/# *//' /etc/sudoers"
+  text g "\n[+] Activating syntax highlighting for nano\n
+  $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > /home/$USR1/.nanorc"
+  $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc
   text g "\n[+] Installing AUR helper YAY\n"
   $CHR "git clone https://aur.archlinux.org/yay.git"
   $CHR "chown $USR1:users /yay;cd /yay;sudo -u $USR1 makepkg --noconfirm -sci"
@@ -624,6 +630,9 @@ if [[ -n $USR1 ]]; then
   YAYINSTALL="sudo -u $USR1 yay --noconfirm --color always -S"
   $CHR "yay -Sy"
   $CHR "$YAYINSTALL $YAY1"
+else
+  text g "\n[+] Activating syntax highlighting for nano\n
+  $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > ~/.nanorc"
 fi
 
 #------------------[ UMOUNT AND REBOOT ]---------------------
