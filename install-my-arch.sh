@@ -556,27 +556,6 @@ $CHR "pacman -Sy"
 text g "\n[+] Installing Xorg packages\n"
 $CHR "$INSTALL $XORG"
 
-# Drivers packages
-if [ $TYPEFLAG = "Vmware" ]; then
-  clockfor="[!] Installing drivers for Vmware profile... "
-  reverse_clock
-  $CHR "$INSTALL $DVRVMWARE"
-  text g "\n[+] Enable vmtool service\n"
-  $CHR "systemctl enable vmtoolsd.service"
-fi
-
-if [ $TYPEFLAG = "Native" ]; then
-  clockfor="[!] Installing drivers for Native profile... "
-  reverse_clock
-  $CHR "$INSTALL $DVRNATIVE"
-  text g "\n[+] Enable Bluetooth service\n"
-  $CHR "systemctl enable bluetooth"
-  $CHR "systemctl enable bumblebeed"
-  if [[ -n $USR1 ]]; then
-   $CHR "gpasswd -a $USR1 bumblebee"
-  fi
-fi
-
 text g "\n[+] Installing Enviroment packages\n"
 $CHR "$INSTALL $ENV"
 
@@ -633,6 +612,27 @@ if [[ -n $USR1 ]]; then
 else
   text g "\n[+] Activating syntax highlighting for nano\n"
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > ~/.nanorc"
+fi
+
+# Drivers packages
+if [ $TYPEFLAG = "Vmware" ]; then
+  clockfor="[!] Installing drivers for Vmware profile... "
+  reverse_clock
+  $CHR "$INSTALL $DVRVMWARE"
+  text g "\n[+] Enable vmtool service\n"
+  $CHR "systemctl enable vmtoolsd.service"
+fi
+
+if [ $TYPEFLAG = "Native" ]; then
+  clockfor="[!] Installing drivers for Native profile... "
+  reverse_clock
+  $CHR "$INSTALL $DVRNATIVE"
+  text g "\n[+] Enable Bluetooth service\n"
+  $CHR "systemctl enable bluetooth"
+  $CHR "systemctl enable bumblebeed"
+  if [[ -n $USR1 ]]; then
+   $CHR "gpasswd -a $USR1 bumblebee"
+  fi
 fi
 
 #------------------[ UMOUNT AND REBOOT ]---------------------
