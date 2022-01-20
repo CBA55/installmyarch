@@ -590,7 +590,7 @@ $CHR "$INSTALL $PAC1"
 # User account
 if [[ -n $USR1 ]]; then
   text g "\n[+] Creating user $USR1 with common groups\n"
-  $CHR "useradd -m -g users -G wheel,power,storage,input,wireshark -s /bin/bash $USR1"; sleep 2
+  $CHR "useradd -m -g users -G wheel,power,storage,input -s /bin/bash $USR1"
   text g "\n[+] Setting password for $USR1\n"
   $CHR "echo $USR1:$PASS1 | chpasswd"
   text g "\n[+] Setting zshell for $USR1\n"
