@@ -618,9 +618,9 @@ if [[ -n $USR1 ]]; then
   $CHR "chsh -s /bin/zsh $USR1"
   text g "\n[+] Setting basic config for Sudo\n"
   $CHR "sed -i '82 s/# *//' /etc/sudoers"
-  text g "\n[+] Activating syntax highlighting for nano\n
+  text g "\n[+] Activating syntax highlighting for nano\n"
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > /home/$USR1/.nanorc"
-  $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc
+  $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc"
   text g "\n[+] Installing AUR helper YAY\n"
   $CHR "git clone https://aur.archlinux.org/yay.git"
   $CHR "chown $USR1:users /yay;cd /yay;sudo -u $USR1 makepkg --noconfirm -sci"
@@ -631,7 +631,7 @@ if [[ -n $USR1 ]]; then
   $CHR "yay -Sy"
   $CHR "$YAYINSTALL $YAY1"
 else
-  text g "\n[+] Activating syntax highlighting for nano\n
+  text g "\n[+] Activating syntax highlighting for nano\n"
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > ~/.nanorc"
 fi
 
