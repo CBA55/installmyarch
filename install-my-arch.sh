@@ -577,7 +577,7 @@ text g "\n[+] Installing Bootloader with fixed path\n"
 $CHR "$INSTALL refind"
 $CHR "refind-install"
 _BPOINT=$(echo "$BPOINT" | sed 's/[/]mnt//g')
-if [ $USELVM = "Yes"]; then
+if [ $USELVM = "Yes" ]; then
  $CHR "sed -i 's/archisobasedir=arch/ro root=\/dev\/mapper\/$VGN-$LVROOT/g' $_BPOINT/refind_linux.conf"
 else
  $CHR "sed -i 's/archisobasedir=arch/ro root=\/dev\/$RDISP/g' $_BPOINT/refind_linux.conf"
