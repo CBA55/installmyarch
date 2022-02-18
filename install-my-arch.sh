@@ -21,13 +21,13 @@ AUR=$(echo $0 | sed 's/install-my-arch.sh/aur-packages.cfg/')
 trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; rm $SYSSEL; rm $SYSERR; exit" SIGHUP SIGINT SIGTERM
 
 # Main packages packages
-BASE="base base-devel linux linux-firmware linux-headers lvm2 man man-pages git"
+BASE="base base-devel linux linux-firmware linux-headers man man-pages"
 XORG="xorg-server xorg-xinit xorg-server-common"
 # Drivers by installation profile
 DVRVMWARE="xf86-video-vmware xf86-input-vmmouse open-vm-tools"
-DVRNATIVE="xf86-video-intel nvidia nvidia-utils bumblebee bluedevil powerdevil pulseaudio pulseaudio-bluetooth plasma-pa"
+DVRNATIVE="xf86-video-intel nvidia nvidia-utils pulseaudio pulseaudio-bluetooth"
 # My Enviroment packages
-ENV="plasma-desktop sddm sddm-kcm plasma-nm kscreen konsole dolphin dolphin-plugins ark"
+ENV="sddm sddm-kcm plasma-desktop bluedevil powerdevil plasma-pa plasma-nm kscreen konsole dolphin dolphin-plugins ark"
 
 
 function display()
@@ -504,6 +504,7 @@ clockfor="[*] Start Base Instalation... "
 reverse_clock
 
 pacstrap $RPOINT $BASE
+[[ $USELVM = "Yes" ]] && text g "\n[+] Installing LVM support\n" && pacstrap $RPOINT lvm2
 
 text g "\n [+] Updating FSTAB\n"
 genfstab -U $RPOINT >> $RPOINT/etc/fstab
@@ -536,8 +537,13 @@ if [[ -n $HOST ]]; then
   $CHR "echo $HOST > /etc/hostname"
 fi
 
-text g "\n[+] mkinitcpio: Loading lvm and generating image\n"
-$CHR "sed -i 's/modconf block filesystems/modconf block lvm2 filesystems/g' /etc/mkinitcpio.conf"
+if [ $USELVM = "Yes" ]; then
+ text g "\n[+] mkinitcpio: Loading lvm and generating image\n"
+ $CHR "sed -i 's/modconf block filesystems/modconf block lvm2 filesystems/g' /etc/mkinitcpio.conf"
+else
+ text g "\n[+] mkinitcpio: generating image\n"
+ $CHR "sed -i 's/modconf block filesystems/modconf block filesystems/g' /etc/mkinitcpio.conf"
+fi
 $CHR "mkinitcpio -p linux"
 
 text g "\n[+] Setting Root user password\n"
@@ -604,10 +610,12 @@ if [[ -n $USR1 ]]; then
   $CHR "git clone https://aur.archlinux.org/yay.git"
   $CHR "chown $USR1:users /yay;cd /yay;sudo -u $USR1 makepkg --noconfirm -sci"
   $CHR "rm -rf /yay"
-  clockfor="[!] Installing AUR packages selected... "
+  clockfor="[!] Installing AUR packages\n"
   reverse_clock
   YAYINSTALL="sudo -u $USR1 yay --noconfirm --color always -S"
   $CHR "yay -Sy"
+  text g "\n[+] Installing nvidia-xrun and selected packages\n"
+  $CHR "$YAYINSTALL nvidia-xrun-git"
   $CHR "$YAYINSTALL $YAY1"
 else
   text g "\n[+] Activating syntax highlighting for nano\n"
@@ -629,10 +637,10 @@ if [ $TYPEFLAG = "Native" ]; then
   $CHR "$INSTALL $DVRNATIVE"
   text g "\n[+] Enable Bluetooth service\n"
   $CHR "systemctl enable bluetooth"
-  $CHR "systemctl enable bumblebeed"
-  if [[ -n $USR1 ]]; then
-   $CHR "gpasswd -a $USR1 bumblebee"
-  fi
+#  $CHR "systemctl enable bumblebeed"
+#  if [[ -n $USR1 ]]; then
+#   $CHR "gpasswd -a $USR1 bumblebee"
+#  fi
 fi
 
 #------------------[ UMOUNT AND REBOOT ]---------------------
