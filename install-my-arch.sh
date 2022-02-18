@@ -22,12 +22,12 @@ trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; rm $SYSSEL; rm $SYSERR; exi
 
 # Main packages packages
 BASE="base base-devel linux linux-firmware linux-headers man man-pages"
-XORG="xorg-server xorg-xinit xorg-server-common"
+#XORG="xorg-server xorg-xinit xorg-server-common"
 # Drivers by installation profile
 DVRVMWARE="xf86-video-vmware xf86-input-vmmouse open-vm-tools"
 DVRNATIVE="xf86-video-intel nvidia nvidia-utils pulseaudio pulseaudio-bluetooth"
 # My Enviroment packages
-ENV="sddm sddm-kcm plasma-desktop bluedevil powerdevil plasma-pa plasma-nm kscreen konsole dolphin dolphin-plugins ark"
+ENV="sddm plasma-meta kscreen konsole dolphin dolphin-plugins ark"
 
 
 function display()
@@ -560,7 +560,7 @@ text g "\n[+] Updating Pacman bases\n"
 $CHR "pacman -Sy"
 
 text g "\n[+] Installing Xorg packages\n"
-$CHR "$INSTALL $XORG"
+$CHR "$INSTALL xorg"
 
 text g "\n[+] Installing Enviroment packages\n"
 $CHR "$INSTALL $ENV"
