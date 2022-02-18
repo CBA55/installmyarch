@@ -607,6 +607,7 @@ if [[ -n $USR1 ]]; then
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > /home/$USR1/.nanorc"
   $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc"
   text g "\n[+] Installing AUR helper YAY\n"
+  $CHR "$INSTALL git"
   $CHR "git clone https://aur.archlinux.org/yay.git"
   $CHR "chown $USR1:users /yay;cd /yay;sudo -u $USR1 makepkg --noconfirm -sci"
   $CHR "rm -rf /yay"
