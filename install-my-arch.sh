@@ -18,7 +18,7 @@ COM=$(echo $0 | sed 's/install-my-arch.sh/com-packages.cfg/')
 AUR=$(echo $0 | sed 's/install-my-arch.sh/aur-packages.cfg/')
 
 # trap and delete temp files
-trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; rm $SYSSEL; rm SYSERR; exit" SIGHUP SIGINT SIGTERM
+trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; rm $SYSSEL; rm $SYSERR; exit" SIGHUP SIGINT SIGTERM
 
 # Main packages packages
 BASE="base base-devel linux linux-firmware linux-headers lvm2 man man-pages git"
