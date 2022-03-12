@@ -1,33 +1,32 @@
 #!/bin/bash +x
 # Unnatended Archlinux Installer - by Sebastian Sanchez Baldoncini
-#
-# Store system options and errors
-SYSSEL=/tmp/systemsettings.sh.$$
+# -------------------------------
+# Store system errors
 SYSERR=/tmp/systemerrors.sh.$$
 
 # Store menu options selected by the user
 INPUT=/tmp/menu.sh.$$
 
-# Storage file for displaying command outputs
+# Storage file for command outputs display
 OUTPUT=/tmp/output.sh.$$
 PARTS=/tmp/parts.sh.$$
 LAYOUTS=/tmp/layouts.sh.$$
 
-# Get absolute paths for config files
+# Get absolute paths for pkgs config files
 COM=$(echo $0 | sed 's/install-my-arch.sh/com-packages.cfg/')
 AUR=$(echo $0 | sed 's/install-my-arch.sh/aur-packages.cfg/')
 
 # trap and delete temp files
-trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; rm $SYSSEL; rm $SYSERR; exit" SIGHUP SIGINT SIGTERM
+trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; rm $SYSERR; exit" SIGHUP SIGINT SIGTERM
 
-# Main packages packages
+# Main packages
 BASE="base base-devel linux linux-firmware linux-headers man man-pages"
 #XORG="xorg-server xorg-xinit xorg-server-common"
 # Drivers by installation profile
 DVRVMWARE="xf86-video-vmware xf86-input-vmmouse open-vm-tools"
 DVRNATIVE="xf86-video-intel nvidia nvidia-utils pulseaudio pulseaudio-bluetooth"
 # My Enviroment packages
-ENV="sddm plasma-meta kscreen konsole dolphin dolphin-plugins ark"
+ENV="sddm plasma-meta konsole dolphin dolphin-plugins ark"
 
 
 function display()
@@ -149,13 +148,13 @@ function reverse_clock()
 #------------------[ START PROGRAM ]---------------------
 
 clear; text y "\n[*] Check Internet Connection\n"
-ping -c4 1.1.1.1
+ping -c3 1.1.1.1
 # Download dialog if necesary
 if [[ $? = 0 ]]; then
   if [[ ! $(pacman -Qs dialog shell scripts) ]]; then
     text y "\n[*] Updating Repositories\n"
     pacman -Sy --noconfirm
-    text y "\n[*] Install Dialog\n"
+    text y "\n[*] Installing Dialog\n"
     pacman -S dialog --noconfirm
   fi
 else
@@ -183,7 +182,7 @@ done
 
 #------------------[ SYSTEM SETTINGS MENU ]---------------------
 
-# Collect Storage Info
+# Merge Storage Info
 echo -e "\nLAYOUT:" >$LAYOUTS
 autodetect layout >>$LAYOUTS
 echo -e "\nSELECTED:" >>$LAYOUTS
@@ -222,7 +221,7 @@ EFIFLAG="No"
 IMPFLAG="No"
 USELVM="No"
 
-# System Settings Pool
+# Install Settings
 declare -i g=0
 while [[ $g = 0 ]]; do
   dialog --clear --colors --backtitle "UNNATENDED ARCHLINUX INSTALLER - STEP 2/5" \
@@ -244,8 +243,7 @@ while [[ $g = 0 ]]; do
   2>"${INPUT}"
   restart
   menuitem=$(<"${INPUT}")
-
-  # Option selected
+  # Continue with selected option
   case $menuitem in
     " [*] Flag")
     TYPEFLAG=$(dialog --colors --clear --title "\Z7[ INSTALL PROFILE ]\Zn" \
@@ -651,8 +649,6 @@ fi
   umount -R $RPOINT
   reboot
 
-
-# If temp files found, delete em
-[ -f $SYSSEL ] && rm $SYSSEL
+# If temp files found, delete
 [ -f $OUTPUT ] && rm $OUTPUT
 [ -f $INPUT ] && rm $INPUT
