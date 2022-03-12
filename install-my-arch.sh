@@ -7,7 +7,7 @@ SYSERR=/tmp/systemerrors.sh.$$
 
 # Store menu options selected by the user
 INPUT=/tmp/menu.sh.$$
-
+#PRUEBA
 # Storage file for displaying command outputs
 OUTPUT=/tmp/output.sh.$$
 PARTS=/tmp/parts.sh.$$
