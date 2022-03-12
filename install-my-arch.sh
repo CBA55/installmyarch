@@ -509,9 +509,9 @@ genfstab -U $RPOINT >> $RPOINT/etc/fstab
 # Insert ntfs Data Partition if set
 [[ -n $MDISP ]] && echo "UUID=$(lsblk -lo NAME,UUID |grep -w $MDISP |awk '{print $2}') $MPOINT ntfs-3g rw,users,umask=0022,uid=1000,gid=100 0 0" >> $RPOINT/etc/fstab
 
-#------------------[ CHROOT DEFAULT ]---------------------
+#------------------[ CHROOT ESSENTIAL CONFIG ]---------------------
 
-clockfor="[*] Start Arch-chroot session... "
+clockfor="[*] Starting Arch-chroot session... "
 reverse_clock
 
 text g "\n[+] Setting Time Zone\n"
@@ -520,7 +520,7 @@ $CHR "ln -sf /usr/share/zoneinfo/America/Argentina/Buenos_Aires /etc/localtime"
 text g "\n[+] Generating /etc/adjtime\n"
 $CHR "hwclock --systohc"
 
-text g "\n[+] Uncomment es_AR in locale.gen\n"
+text g "\n[+] Enable es_AR language\n"
 $CHR "sed -i '/es_AR/s/^#//g' /etc/locale.gen"
 
 text g "\n[+] Generating locale\n"
@@ -538,27 +538,32 @@ fi
 if [ $USELVM = "Yes" ]; then
  text g "\n[+] mkinitcpio: Loading lvm and generating image\n"
  $CHR "sed -i 's/modconf block filesystems/modconf block lvm2 filesystems/g' /etc/mkinitcpio.conf"
-else
- text g "\n[+] mkinitcpio: generating image\n"
- $CHR "sed -i 's/modconf block filesystems/modconf block filesystems/g' /etc/mkinitcpio.conf"
 fi
 $CHR "mkinitcpio -p linux"
 
 text g "\n[+] Setting Root user password\n"
 $CHR "echo root:$PASS | chpasswd"
 
-text g "\n[+] Installing ZSH before shell setting\n"
-$CHR "$INSTALL zsh zsh-completions"
-$CHR "chsh -s /bin/zsh"
-
 text g "\n[+] Enable multilib repo\n"
 $CHR "sed -i '93,94 s/# *//' /etc/pacman.conf"
+
+text g "\n[+] Setting services timeout\n"
+$CHR "sed -i '42,43 s/# *//' /etc/systemd/system.conf"
+$CHR "sed -i 's/90s/9s/g' /etc/systemd/system.conf"
+
+text g "\n[+] Enabñe IPTABLES with basic configuration \n"
+$CHR "cp /etc/iptables/simple_firewall.rules /etc/iptables/iptables.rules"
+$CHR "systemctl enable iptables"
 
 text g "\n[+] Updating Pacman bases\n"
 $CHR "pacman -Sy"
 
 text g "\n[+] Installing Xorg packages\n"
 $CHR "$INSTALL xorg"
+
+text g "\n[+] Installing ZSH before shell setting\n"
+$CHR "$INSTALL zsh zsh-completions"
+$CHR "chsh -s /bin/zsh"
 
 text g "\n[+] Installing Enviroment packages\n"
 $CHR "$INSTALL $ENV"
@@ -568,14 +573,6 @@ $CHR "systemctl enable sddm"
 
 text g "\n[+] Enable NetworkManager service\n"
 $CHR "systemctl enable NetworkManager"
-
-text g "\n[+] Setting services timeout\n"
-$CHR "sed -i '42,43 s/# *//' /etc/systemd/system.conf"
-$CHR "sed -i 's/90s/9s/g' /etc/systemd/system.conf"
-
-text g "\n[+] Enabñe IPTABLES with basic configuration \n"
-$CHR "cp /etc/iptables/simple_firewall.rules /etc/iptables/iptables.rules"
-$CHR "systemctl enable iptables"
 
 text g "\n[+] Installing Bootloader with fixed path\n"
 $CHR "$INSTALL refind"
