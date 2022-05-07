@@ -154,7 +154,7 @@ while [[ -z $PDISP ]]; do
   --title "\Z7[ SELECT STORAGE DEVICE ]\Zn" \
   --ok-label OK \
   --nocancel \
-  --radiolist "\nSelect with [SPACEBAR]:" 0 0 0 $(while read line; do echo $line; done <$OUTPUT) \
+  --checklist "\nSelect with [SPACEBAR]:" 0 0 0 $(while read line; do echo $line; done <$OUTPUT) \
   3>&1 1>&2 2>&3 3>&- \
   )
 
