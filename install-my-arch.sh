@@ -43,7 +43,7 @@ function display()
               display error "Password cant be empty"
             elif [ $2 != $3 ]; then
               display error "Passwords dont match"
-            else-z
+            else
               [[ $4 = 0 ]] && PASSFLAG="Established"; i=1
               [[ $4 = 1 ]] && PASS1FLAG="Established"; i=1
             fi
