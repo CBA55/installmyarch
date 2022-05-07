@@ -139,10 +139,8 @@ ping -c3 1.1.1.1
 # Download dialog if necesary
 if [[ $? = 0 ]]; then
   if [[ ! $(pacman -Qs dialog shell scripts) ]]; then
-    text y "\n[*] Updating Repositories\n"
-    pacman -Sy --noconfirm
     text y "\n[*] Installing Dialog\n"
-    pacman -S dialog --noconfirm
+    pacman -Sy dialog --noconfirm
   fi
 else
   text r "\n[!] No Internet Connection\n"; exit 1
@@ -173,8 +171,6 @@ done
 echo -e "\nLAYOUT:" >$LAYOUTS
 autodetect layout >>$LAYOUTS
 echo -e "\nSELECTED:" >>$LAYOUTS
-autodetect layoutparts >>$LAYOUTS
-echo -e "\nLVM DETECTED:" >>$LAYOUTS
 echo -e "\n[*] Requiered\n[ ] Optional\n\nDEFAULTS:" >>$LAYOUTS
 
 # Search for efi
