@@ -76,20 +76,7 @@ function autodetect()
     size_calc)  lsblk |grep -iw $2 |awk '{print $4}' |tr -d G |tr -d M |tr "," ".";;
     efi)  EDISP=$(fdisk -l |grep -v $usb |grep EFI |awk '{print $1}' |sed 's/\/dev\///');;
     pv) PV=$(pvs |awk 'NR>1{print $1}' |sed -r 's/.{5}//');;
-    cleanpv)  PV=$(fdisk -l |grep LVM |awk '{print $1}' |sed 's/\/dev\///');;
-    vgn)  VGN=$(pvs |awk 'NR>1{print $2}');;
-    vols) lsblk -lo NAME,SIZE,TYPE |grep lvm;;
     usb)  usb=$(lsblk -lo NAME,FSTYPE |grep -iw iso9660 |awk '{print $1}' |sed 's/.$//');;
-    lvm)  lsblk -o NAME,SIZE,TYPE,FSTYPE |grep -i lvm;;
-    mountvols)  if cat /proc/mounts | grep -w "$2" &>/dev/null; then
-                  text y "[*] $4\e[0m: Ya esta montado"
-                elif mount /dev/mapper/$2 $3 &>/dev/null; then
-                  text g "[+] $4\e[0m: Montado correctamente"
-                else
-                  text r "[!] $4\e[0m: Error al montar"
-                  read; exit 1
-                fi
-                ;;
     mountothers)  if cat /proc/mounts | grep -w "$2" > /dev/null; then
                     text y "[*] $4\e[0m: Ya esta montado"
                   elif mount /dev/$2 $3 &>/dev/null; then
