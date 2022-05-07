@@ -167,6 +167,8 @@ done
 # Merge Storage Info
 echo -e "\nLAYOUT:" >$LAYOUTS
 autodetect layout >>$LAYOUTS
+echo -e "\nSELECTED:" >>$LAYOUTS
+autodetect layoutparts >>$LAYOUTS
 echo -e "\n[*] Requiered\n[ ] Optional\n\nDEFAULTS:" >>$LAYOUTS
 
 # Search for efi
