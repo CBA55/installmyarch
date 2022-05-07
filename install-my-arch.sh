@@ -24,7 +24,7 @@ BASE="base base-devel linux linux-firmware linux-headers man man-pages"
 #XORG="xorg-server xorg-xinit xorg-server-common"
 # Drivers by installation profile
 DVRVMWARE="xf86-video-vmware xf86-input-vmmouse open-vm-tools"
-DVRNATIVE="xf86-video-intel nvidia nvidia-utils pulseaudio pulseaudio-bluetooth"
+DVRNATIVE="xf86-video-intel pulseaudio pulseaudio-bluetooth"
 # My Enviroment packages
 ENV="sddm plasma-meta konsole dolphin dolphin-plugins ark"
 
@@ -169,7 +169,7 @@ while [[ -z $PDISP ]]; do
   --title "\Z7[ SELECT STORAGE DEVICE ]\Zn" \
   --ok-label OK \
   --nocancel \
-  --radiolist "\nUse [SPACEBAR] for Select:" 0 0 0 $(while read line; do echo $line; done <$OUTPUT) \
+  --radiolist "\nSelect with [SPACEBAR]:" 0 0 0 $(while read line; do echo $line; done <$OUTPUT) \
   3>&1 1>&2 2>&3 3>&- \
   )
 
@@ -188,22 +188,9 @@ autodetect layout >>$LAYOUTS
 echo -e "\nSELECTED:" >>$LAYOUTS
 autodetect layoutparts >>$LAYOUTS
 echo -e "\nLVM DETECTED:" >>$LAYOUTS
-if [[ $(autodetect vols) ]]; then
-  autodetect lvm >>$LAYOUTS
-  autodetect pv
-  PVSIZE=$(autodetect size_show $PV)
-  autodetect vgn
-else
-  autodetect cleanpv
-  PVSIZE=$(autodetect size_show $PV)
-  VGN="ARCH"
-  LVROOT="root"
-  LVHOME="home"
-  echo -e "None" >>$LAYOUTS
-fi
 echo -e "\n[*] Requiered\n[ ] Optional\n\nDEFAULTS:" >>$LAYOUTS
 
-# Search for efi part without format
+# Search for efi
 autodetect efi
 ESIZE=$(autodetect size_show $EDISP)
 
@@ -219,7 +206,6 @@ HPOINT="$RPOINT/home"
 MPOINT="/run/ssd"
 EFIFLAG="No"
 IMPFLAG="No"
-USELVM="No"
 
 # Install Settings
 declare -i g=0
@@ -232,11 +218,10 @@ while [[ $g = 0 ]]; do
   " [*] Flag" "Install Profile:\Z4$TYPEFLAG\Zn | Format EFI:\Z4$EFIFLAG\Zn" \
   " [*] Boot" "Partition:\Z4$BDISP\Zn | Mount:\Z4$BPOINT\Zn" \
   " [*] Efi" "Partition:\Z4$EDISP\Zn | Mount:\Z4$EPOINT\Zn" \
-  " [*] Lvm" "Use LVM:\Z4$USELVM\Zn Partition:\Z4$PV\Zn | Group:\Z4$VGN\Zn | Size:\Z4$PVSIZE\Zn" \
-  " [*] Root" "Part:\Z4$RDISP\Zn Volume:\Z4$LVROOT\Zn | Size:\Z4$RSIZE\Zn | Mount:\Z4$RPOINT\Zn" \
+  " [*] Root" "Part:\Z4$RDISP\Zn | Size:\Z4$RSIZE\Zn | Mount:\Z4$RPOINT\Zn" \
   " [*] Pass" "Root User Password:\Z4$PASSFLAG\Zn" \
   " [ ] User" "Username:\Z4$USR1\Zn | Password:\Z4$PASS1FLAG\Zn" \
-  " [ ] Home" "Part:\Z4$HDISP\Zn Volume:\Z4$LVHOME\Zn | Size:\Z4$HSIZE\Zn | Mount:\Z4$HPOINT\Zn" \
+  " [ ] Home" "Part:\Z4$HDISP\Zn | Size:\Z4$HSIZE\Zn | Mount:\Z4$HPOINT\Zn" \
   " [ ] Host" "Hostname:\Z4$HOST\Zn" \
   " [ ] Ntfs" "Data Partition:\Z4$MDISP\Zn | Size:\Z4$MSIZE\Zn | Mount:\Z4$MPOINT\Zn" \
   " [!] DONE" "\Zb\Z6NEXT STEP\Zn" \
@@ -256,7 +241,7 @@ while [[ $g = 0 ]]; do
     [[ $? = 1 ]] && TYPEFLAG="Native"
     EFIFLAG=$(dialog --colors --clear --backtitle "" \
     --title "\Z7[ EFI FORMAT ]\Zn" \
-    --yesno "\n If efi partition is shared with other/s OS chose No" 7 65 \
+    --yesno "\n If efi partition is shared with other/s OS, chose No" 7 65 \
     3>&1 1>&2 2>&3 3>&- \
     )
     [[ $? = 0 ]] && EFIFLAG="Yes"
@@ -274,48 +259,9 @@ while [[ $g = 0 ]]; do
     ESIZE=$(autodetect size_show $EDISP)
     EPOINT=$(display input "EFI MOUNT POINT" "$EPOINT")
     ;;
-    " [*] Lvm")
-    autodetect parts >$PARTS
-    USELVM=$(dialog --colors --clear --backtitle "" \
-    --title "\Z7[ LOGICAL VOLUMES ]\Zn" \
-    --yesno "\n Gonna use LVM?" 7 65 \
-    3>&1 1>&2 2>&3 3>&- \
-    )
-    [[ $? = 0 ]] && USELVM="Yes"
-    [[ $? = 1 ]] && USELVM="No"
-    if [ $USELVM = "Yes" ]; then
-    PV=$(display radio "SELECT LVM DEVICE")
-    PVSIZE=$(autodetect size_show $PV)
-    VGN=$(display input "ENTER VOLUME GROUP NAME" "$VGN")
-    fi
-    ;;
     " [*] Root")
-    if [ $USELVM = "Yes" ]; then
-      if [[ -n $VGN ]]; then
-        if [[ $(lvs) ]]; then
-          autodetect vols >$PARTS
-          LVROOT=$(display radio "SELECT ROOT VOLUME")
-          if [[ -n $LVROOT ]]; then
-            VGN=$(echo $LVROOT |sed 's/-.*//')
-            LVROOT=$(echo $LVROOT |sed 's/.*-//')
-            RSIZE=$(autodetect size_show $LVROOT)
-          else
-            RSIZE=""
-            LVROOT=$(display input "ROOT VOLUME NAME" "$LVROOT")
-            [[ -n $LVROOT ]] && RSIZE=$(display input "ROOT VOLUME SIZE" "$RSIZE")
-          fi
-          [[ -n $LVROOT ]] && RPOINT=$(display input "ROOT MOUNT POINT" "$RPOINT")
-        else
-          LVROOT=$(display input "ROOT VOLUME NAME" "$LVROOT")
-          [[ -n $LVROOT ]] && RSIZE=$(display input "ROOT VOLUME SIZE" "$RSIZE")
-        fi
-      else
-        display error "MUST SET LVM GROUP FIRST!"
-      fi
-    else
-      RDISP=$(display radio "SELECT ROOT PARTITION")
-      RSIZE=$(autodetect size_show $RDISP)
-    fi
+    RDISP=$(display radio "SELECT ROOT PARTITION")
+    RSIZE=$(autodetect size_show $RDISP)
     ;;
     " [*] Pass")
     declare -i i=0
@@ -326,7 +272,7 @@ while [[ $g = 0 ]]; do
     done
     ;;
     " [ ] User")
-    USR1=$(display input "ENTER USER NAME" "$USR1" "\nEmpty for skip user account and home dir creation\n")
+    USR1=$(display input "ENTER USER NAME" "$USR1" "\nEmpty chain will skip user account and home dir creation\n")
     if [[ -n $USR1 ]]; then
       declare -i i=0
       while [[ $i = 0 ]]; do
@@ -336,34 +282,15 @@ while [[ $g = 0 ]]; do
       done
       HPOINT="$RPOINT/home"
     else
-      PASS1FLAG=""; HDISP=""; LVHOME=""; HSIZE=""; HPOINT=""
+      PASS1FLAG=""; HDISP=""; HSIZE=""; HPOINT=""
     fi
     ;;
     " [ ] Home")
     if [[ -n $USR1 ]]; then
-     if [ $USELVM = "Yes" ]; then
-      if [[ $(lvs) ]]; then
-       autodetect vols >$PARTS && LVHOME=$(display radio "SELECT HOME VOLUME")
-       if [[ -n $LVHOME ]]; then      
-         VGN=$(echo $LVHOME |sed 's/-.*//')
-         LVHOME=$(echo $LVHOME |sed 's/.*-//')
-         HSIZE=$(autodetect size_show $LVHOME)
-       else
-         HSIZE=""
-         LVHOME=$(display input "HOME VOLUME NAME" "$LVHOME")
-         [[ -n $LVHOME ]] && HSIZE=$(display input "HOME VOLUME SIZE" "$HSIZE")
-       fi
-      else
-       LVHOME=$(display input "HOME VOLUME NAME" "$LVHOME")
-       [[ -n $LVHOME ]] && HSIZE=$(display input "HOME VOLUME SIZE" "$HSIZE")
-      fi
-       [[ -n $LVHOME ]] && HPOINT=$(display input "HOME MOUNT POINT" "$HPOINT")
-     else
       HDISP=$(display radio "SELECT HOME PARTITION")
       HSIZE=$(autodetect size_show $HDISP)
-     fi
     else
-     display error "Please set user first"
+     display error "Please set USER first"
     fi
     ;;
     " [ ] Host")
@@ -407,12 +334,11 @@ dialog --colors --clear --backtitle "UNNATENDED ARCHLINUX INSTALLER - CONFIRM IN
 Flag | Install Profile:\Z4$TYPEFLAG\Zn | Import Custom Config:\Z4$IMPFLAG\Zn\n
 Boot | Partition:\Z4$BDISP\Zn | Size:\Z4$BSIZE\Zn | Mount:\Z4$BPOINT\Zn\n
  Efi | Partition:\Z4$EDISP\Zn | Size:\Z4$ESIZE\Zn | Mount:\Z4$EPOINT\Zn | Format:\Z4$EFIFLAG\Zn\n
- Lvm | Partition:\Z4$PV\Zn | Size:\Z4$PVSIZE\Zn | Group:\Z4$VGN\Zn\n
-Root | Root Volume:\Z4$LVROOT\Zn | Size:\Z4$RSIZE\Zn | Root pass:\Z4$PASSFLAG\Zn\n
+Root | Root Partition:\Z4$RDISP\Zn | Size:\Z4$RSIZE\Zn | Root pass:\Z4$PASSFLAG\Zn\n
 \nOPTIONAL:\n
 Host | Hostname:\Z4$HOST\Zn\n
 User | Username:\Z4$USR1\Zn | $USR1 pass:\Z4$PASS1FLAG\Zn\n
-Home | Home Volume:\Z4$LVHOME\Zn | Size:\Z4$HSIZE\Zn | Mount:\Z4$HPOINT\Zn\n
+Home | Home Partition:\Z4$HDISP\Zn | Size:\Z4$HSIZE\Zn | Mount:\Z4$HPOINT\Zn\n
 Data | Data Partition:\Z4$MDISP\Zn | Size:\Z4$MSIZE\Zn | Mount:\Z4$MPOINT\Zn\n\n" 0 0
 
 restart
@@ -425,50 +351,24 @@ SEARCH="pacman -Ss --color always"
 
 clear
 
-clockfor="[*] Start Format and LVM if necesary... "
+clockfor="[*] Start Format... "
 reverse_clock
-if [ $USELVM = "Yes" ]; then
- # Create volume group if necesary
- [[ ! $(autodetect dev $VGN) ]] && text g "\n[+] Creating Lvm Group: $VGN\n" && vgcreate $VGN /dev/$PV
- # Create root volume if necesary
- [[ ! $(autodetect dev "$VGN-$LVROOT") ]]  && text g "\n[+] Creating Lvm volume: $VGN-$LVROOT\n" && lvcreate -L $RSIZE $VGN -n $LVROOT
- # Check and umount before format
- if cat /proc/mounts | grep -w "$VGN-$LVROOT" &>/dev/null; then
-   umount -R $RPOINT
- fi
- # Format Root Volume
- text g "\n[+] Formating $VGN-$LVROOT\n"
- mkfs.ext4 -F /dev/mapper/$VGN-$LVROOT
-else
- # Format Root Partition
- text g "\n[+] Formating root partition $RDISP\n"
- mkfs.ext4 -F /dev/$RDISP
-fi
 
+# Format Root Partition
+text g "\n[+] Formating root partition $RDISP\n"
+mkfs.ext4 -F /dev/$RDISP
 # Format boot and EFI
 text g "\n[+] Formating Boot partition\n"
 mkfs.ext4 -F /dev/$BDISP
 text g "\n[+] arch label for Boot partition\n"
 tune2fs -L arch /dev/$BDISP
-# Check Efi flag before format
+# Format Efi
 [[ $EFIFLAG = "Yes" ]] && text g "\n[+] Formating Efi partition\n" && mkfs.vfat -F 32 /dev/$EDISP
 [[ $EFIFLAG = "No" ]] && text y "\n[+] Skiping Efi partition format\n"
-# Create home volume if user account has being set
+# Create user account
 if [[ -n $USR1 ]]; then
- if [ $USELVM = "Yes" ]; then
-  if [[ ! $(autodetect dev $VGN-$LVHOME) ]]; then
-    text g "[+] Creating Lvm volume $VGN-$LVHOME\n"
-    lvcreate -L $HSIZE $VGN -n $LVHOME
-    text g "\n[+] Formating Lvm volume $LVHOME\n"
-    mkfs.ext4 -F /dev/mapper/$VGN-$LVHOME
-  else
-    text g "\n[+] Formating detected volume $VGN-$LVHOME\n"
-    mkfs.ext4 -F /dev/mapper/$VGN-$LVHOME 
-  fi
- else
   text g "\n[+] Formating home partition $HDISP\n"
   mkfs.ext4 -F /dev/$HDISP
- fi
 fi
 
 #------------------[ CHECK DIRS AND MOUNT ]---------------------
@@ -476,24 +376,19 @@ fi
 clockfor="[*] Start partitions mounting... "
 reverse_clock
 
+# Create and mount root
 autodetect makedirs "$RPOINT" "Root"
-if [ $USELVM = "Yes" ]; then
- autodetect mountvols "$VGN-$LVROOT" "$RPOINT" "Root"
-else
- autodetect mountothers "$RDISP" "$RPOINT" "Root"
-fi
+autodetect mountothers "$RDISP" "$RPOINT" "Root"
+# Create and mount boot
 autodetect makedirs "$BPOINT" "Boot"
 autodetect mountothers "$BDISP" "$BPOINT" "Boot"
+# Create and mount efi
 autodetect makedirs "$EPOINT" "Efi"
 autodetect mountothers "$EDISP" "$EPOINT" "Efi"
-# Check user and mount home
+# Check user before create and mount home
 if [[ -n $USR1 ]]; then
  autodetect makedirs "$HPOINT" "home"
- if [ $USELVM = "Yes" ]; then
-  autodetect mountvols "$VGN-$LVHOME" "$HPOINT" "home"
- else
-  autodetect mountothers "$HDISP" "$HPOINT" "home"
- fi
+ autodetect mountothers "$HDISP" "$HPOINT" "home"
 fi
 
 #------------------[ PACSTRAP AND FSTAB ]---------------------
@@ -501,12 +396,9 @@ fi
 clockfor="[*] Start Base Instalation... "
 reverse_clock
 
-pacstrap $RPOINT $BASE
-[[ $USELVM = "Yes" ]] && text g "\n[+] Installing LVM support\n" && pacstrap $RPOINT lvm2
-
 text g "\n [+] Updating FSTAB\n"
 genfstab -U $RPOINT >> $RPOINT/etc/fstab
-# Insert ntfs Data Partition if set
+# Insert ntfs Data Partition in FSTAB
 [[ -n $MDISP ]] && echo "UUID=$(lsblk -lo NAME,UUID |grep -w $MDISP |awk '{print $2}') $MPOINT ntfs-3g rw,users,umask=0022,uid=1000,gid=100 0 0" >> $RPOINT/etc/fstab
 
 #------------------[ CHROOT ESSENTIAL CONFIG ]---------------------
@@ -535,10 +427,7 @@ if [[ -n $HOST ]]; then
   $CHR "echo $HOST > /etc/hostname"
 fi
 
-if [ $USELVM = "Yes" ]; then
- text g "\n[+] mkinitcpio: Loading lvm and generating image\n"
- $CHR "sed -i 's/modconf block filesystems/modconf block lvm2 filesystems/g' /etc/mkinitcpio.conf"
-fi
+text g "\n[+] Creating linux kernel image\n"
 $CHR "mkinitcpio -p linux"
 
 text g "\n[+] Setting Root user password\n"
@@ -561,7 +450,7 @@ $CHR "pacman -Sy"
 text g "\n[+] Installing Xorg packages\n"
 $CHR "$INSTALL xorg"
 
-text g "\n[+] Installing ZSH before shell setting\n"
+text g "\n[+] Installing ZSH for root\n"
 $CHR "$INSTALL zsh zsh-completions"
 $CHR "chsh -s /bin/zsh"
 
@@ -578,11 +467,7 @@ text g "\n[+] Installing Bootloader with fixed path\n"
 $CHR "$INSTALL refind"
 $CHR "refind-install"
 _BPOINT=$(echo "$BPOINT" | sed 's/[/]mnt//g')
-if [ $USELVM = "Yes" ]; then
- $CHR "sed -i 's/archisobasedir=arch/ro root=\/dev\/mapper\/$VGN-$LVROOT/g' $_BPOINT/refind_linux.conf"
-else
- $CHR "sed -i 's/archisobasedir=arch/ro root=\/dev\/$RDISP/g' $_BPOINT/refind_linux.conf"
-fi
+$CHR "sed -i 's/archisobasedir=arch/ro root=\/dev\/$RDISP/g' $_BPOINT/refind_linux.conf"
 
 clockfor="[!] Installing community packages selected... "
 reverse_clock
@@ -591,17 +476,17 @@ $CHR "$INSTALL $PAC1"
 # User account
 if [[ -n $USR1 ]]; then
   text g "\n[+] Creating user $USR1 with common groups\n"
-  $CHR "useradd -m -g users -G wheel,power,storage,input -s /bin/bash $USR1"
+  $CHR "useradd -m -g users -G wheel,power,storage,input -s /bin/zsh $USR1"
   text g "\n[+] Setting password for $USR1\n"
   $CHR "echo $USR1:$PASS1 | chpasswd"
-  text g "\n[+] Setting zshell for $USR1\n"
-  $CHR "chsh -s /bin/zsh $USR1"
+#  text g "\n[+] Setting zshell for $USR1\n"
+#  $CHR "chsh -s /bin/zsh $USR1"
   text g "\n[+] Setting basic config for Sudo\n"
   $CHR "sed -i '82 s/# *//' /etc/sudoers"
   text g "\n[+] Activating syntax highlighting for nano\n"
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > /home/$USR1/.nanorc"
   $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc"
-  text g "\n[+] Installing AUR helper YAY\n"
+  text g "\n[+] Installing YAY - AUR helper\n"
   $CHR "$INSTALL git"
   $CHR "git clone https://aur.archlinux.org/yay.git"
   $CHR "chown $USR1:users /yay;cd /yay;sudo -u $USR1 makepkg --noconfirm -sci"
@@ -611,7 +496,7 @@ if [[ -n $USR1 ]]; then
   YAYINSTALL="sudo -u $USR1 yay --noconfirm --color always -S"
   $CHR "yay -Sy"
   text g "\n[+] Installing nvidia-xrun and selected packages\n"
-  $CHR "$YAYINSTALL nvidia-xrun-git"
+#  $CHR "$YAYINSTALL nvidia-xrun-git"
   $CHR "$YAYINSTALL $YAY1"
 else
   text g "\n[+] Activating syntax highlighting for nano\n"
@@ -619,24 +504,18 @@ else
 fi
 
 # Drivers packages
-if [ $TYPEFLAG = "Vmware" ]; then
-  clockfor="[!] Installing drivers for Vmware profile... "
-  reverse_clock
-  $CHR "$INSTALL $DVRVMWARE"
-  text g "\n[+] Enable vmtool service\n"
-  $CHR "systemctl enable vmtoolsd.service"
-fi
-
 if [ $TYPEFLAG = "Native" ]; then
   clockfor="[!] Installing drivers for Native profile... "
   reverse_clock
   $CHR "$INSTALL $DVRNATIVE"
   text g "\n[+] Enable Bluetooth service\n"
   $CHR "systemctl enable bluetooth"
-#  $CHR "systemctl enable bumblebeed"
-#  if [[ -n $USR1 ]]; then
-#   $CHR "gpasswd -a $USR1 bumblebee"
-#  fi
+else
+  clockfor="[!] Installing drivers for Vmware profile... "
+  reverse_clock
+  $CHR "$INSTALL $DVRVMWARE"
+  text g "\n[+] Enable vmtool service\n"
+  $CHR "systemctl enable vmtoolsd.service"
 fi
 
 #------------------[ UMOUNT AND REBOOT ]---------------------
