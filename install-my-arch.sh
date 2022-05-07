@@ -68,15 +68,17 @@ function autodetect()
 {
 	case $1 in
     dev)  lsblk |grep -iw $2;;
-    devs) lsblk -lo NAME,SIZE,TYPE |sed "s/$usb.*//" |grep -iw disk;;
-    parts)  lsblk -lo NAME,SIZE,TYPE |sed "s/$usb.*//" |grep -iw part;;
-    layout) lsblk -o NAME,SIZE,FSTYPE,TYPE |sed "s/$usb.*//" |grep 'disk\|part';;
+#    devs) lsblk -lo NAME,SIZE,TYPE |sed "s/$usb.*//" |grep -iw disk;;
+    devs) lsblk -lo NAME,SIZE,TYPE |grep -iw disk;;
+    parts)  lsblk -lo NAME,SIZE,TYPE |grep -iw part;;
+    layout) lsblk -o NAME,SIZE,FSTYPE,TYPE |grep 'disk\|part';;
     layoutparts)  fdisk -lo Device,Size,Type |grep $PDISP;;
     size_show)  lsblk -l |grep -iw $2 |awk '{print $4}' |tr "," ".";;
     size_calc)  lsblk |grep -iw $2 |awk '{print $4}' |tr -d G |tr -d M |tr "," ".";;
-    efi)  EDISP=$(fdisk -l |grep -v $usb |grep EFI |awk '{print $1}' |sed 's/\/dev\///');;
-    pv) PV=$(pvs |awk 'NR>1{print $1}' |sed -r 's/.{5}//');;
-    usb)  usb=$(lsblk -lo NAME,FSTYPE |grep -iw iso9660 |awk '{print $1}' |sed 's/.$//');;
+#    efi)  EDISP=$(fdisk -l |grep -v $usb |grep EFI |awk '{print $1}' |sed 's/\/dev\///');;
+    efi)  EDISP=$(fdisk -l |grep EFI |awk '{print $1}' |sed 's/\/dev\///');;
+     pv) PV=$(pvs |awk 'NR>1{print $1}' |sed -r 's/.{5}//');;
+#    usb)  usb=$(lsblk -lo NAME,FSTYPE |grep -iw iso9660 |awk '{print $1}' |sed 's/.$//');;
     mountothers)  if cat /proc/mounts | grep -w "$2" > /dev/null; then
                     text y "[*] $4\e[0m: Ya esta montado"
                   elif mount /dev/$2 $3 &>/dev/null; then
