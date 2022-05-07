@@ -43,7 +43,7 @@ function display()
               display error "Password cant be empty"
             elif [ $2 != $3 ]; then
               display error "Passwords dont match"
-            else
+            else-z
               [[ $4 = 0 ]] && PASSFLAG="Established"; i=1
               [[ $4 = 1 ]] && PASS1FLAG="Established"; i=1
             fi
@@ -146,18 +146,17 @@ else
   text r "\n[!] No Internet Connection\n"; exit 1
 fi
 
-#autodetect usb
-#autodetect devs >$OUTPUT
+autodetect usb
+autodetect devs >$OUTPUT
 while [[ -z $PDISP ]]; do
   # Device to partition
   PDISP=$(dialog --colors --clear --backtitle "UNNATENDED ARCHLINUX INSTALLER - STEP 1/5" \
   --title "\Z7[ SELECT STORAGE DEVICE ]\Zn" \
   --ok-label OK \
   --nocancel \
-  --checklist "\nSelect with [SPACEBAR]:" 0 0 0 $(while read line; do echo $line; done <$OUTPUT) \
+  --radiolist "\nSelect with [SPACEBAR]:" 0 0 0 $(while read line; do echo $line; done <$OUTPUT) \
   3>&1 1>&2 2>&3 3>&- \
   )
-
   # Format selected device
   if [[ -n $PDISP ]]; then
     clear; cfdisk /dev/$PDISP
