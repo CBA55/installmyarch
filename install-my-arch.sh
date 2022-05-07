@@ -146,8 +146,8 @@ else
   text r "\n[!] No Internet Connection\n"; exit 1
 fi
 
-autodetect usb
-autodetect devs >$OUTPUT
+#autodetect usb
+#autodetect devs >$OUTPUT
 while [[ -z $PDISP ]]; do
   # Device to partition
   PDISP=$(dialog --colors --clear --backtitle "UNNATENDED ARCHLINUX INSTALLER - STEP 1/5" \
