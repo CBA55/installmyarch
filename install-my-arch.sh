@@ -171,10 +171,6 @@ echo -e "\nSELECTED:" >>$LAYOUTS
 autodetect layoutparts >>$LAYOUTS
 echo -e "\n[*] Requiered\n[ ] Optional\n\nDEFAULTS:" >>$LAYOUTS
 
-# Search for efi
-autodetect efi
-ESIZE=$(autodetect size_show $EDISP)
-
 # My Default Settings
 RDISP=""
 HDISP=""
