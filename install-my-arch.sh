@@ -415,7 +415,7 @@ text g "\n[+] Enable multilib repo\n"
 $CHR "sed -i '93,94 s/# *//' /etc/pacman.conf"
 
 text g "\n[+] Setting services timeout\n"
-$CHR "sed -i '42,43 s/# *//' /etc/systemd/system.conf"
+$CHR "sed -i '44,45 s/# *//' /etc/systemd/system.conf"
 $CHR "sed -i 's/90s/9s/g' /etc/systemd/system.conf"
 
 text g "\n[+] Enabñe IPTABLES with basic configuration \n"
