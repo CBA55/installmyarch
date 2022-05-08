@@ -1,8 +1,8 @@
 #!/bin/bash +x
 # Unnatended Archlinux Installer - by Sebastian Sanchez Baldoncini
 # -------------------------------
-# Store system errors
-SYSERR=/tmp/systemerrors.sh.$$
+# Store log file
+SYSERR=/mnt/install-my-arch.sh.$$
 
 # Store menu options selected by the user
 INPUT=/tmp/menu.sh.$$
@@ -21,7 +21,6 @@ trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; rm $SYSERR; exit" SIGHUP SI
 
 # Main packages
 BASE="base base-devel linux linux-firmware linux-headers man man-pages"
-#XORG="xorg-server xorg-xinit xorg-server-common"
 # Drivers by installation profile
 DVRVMWARE="xf86-video-vmware xf86-input-vmmouse open-vm-tools"
 DVRNATIVE="xf86-video-intel pulseaudio pulseaudio-bluetooth"
@@ -293,7 +292,7 @@ PAC1=$(dialog --colors --clear --backtitle "UNNATENDED ARCHLINUX INSTALLER - STE
 )
 
 # Select aur packages
-YAY1=$(dialog --colors --clear --backtitle "UNNATENDED ARCHLINUX INSTALLER - STEP 4/5" \
+AUR1=$(dialog --colors --clear --backtitle "UNNATENDED ARCHLINUX INSTALLER - STEP 4/5" \
 --no-items \
 --title "\Z7[ AUR PACKAGES ]\Zn" \
 --nocancel \
@@ -462,17 +461,23 @@ if [[ -n $USR1 ]]; then
   text g "\n[+] Activating syntax highlighting for nano\n"
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > /home/$USR1/.nanorc"
   $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc"
-  text g "\n[+] Installing YAY - AUR helper\n"
+  # AUR Helper 'Paru'
+  text g "\n[+] Installing Paru - AUR helper\n"
   $CHR "$INSTALL git"
-  $CHR "git clone https://aur.archlinux.org/yay.git"
-  $CHR "chown $USR1:users /yay;cd /yay;sudo -u $USR1 makepkg --noconfirm -sci"
-  $CHR "rm -rf /yay"
+  $CHR "git clone https://aur.archlinux.org/paru.git"
+  $CHR "chown $USR1:users /paru;cd /paru;sudo -u $USR1 makepkg --noconfirm -sci"
+  $CHR "rm -rf /paru"
+  PARUINSTALL="sudo -u $USR1 paru --noconfirm --color always -S"
+  # OH-MY-ZSHELL + POWERLEVEL10K
+  text g "\n[+] Installing and configure oh-my-zshell + powerlevel10k theme\n"
+  $CHR "sudo -u $USR1 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
+  $CHR "$PARUINSTALL ttf-meslo-nerd-font-powerlevel10k"
+  $CHR "sudo -u $USR1 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+  # AUR packages
   clockfor="[!] Installing AUR packages\n"
   reverse_clock
-  YAYINSTALL="sudo -u $USR1 yay --noconfirm --color always -S"
-  $CHR "yay -Sy"
-  text g "\n[+] Installing selected packages from AUR\n"
-  $CHR "$YAYINSTALL $YAY1"
+  $CHR "paru -Sy"
+  $CHR "$PARUINSTALL $AUR1"
 else
   text g "\n[+] Activating syntax highlighting for nano\n"
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > ~/.nanorc"
