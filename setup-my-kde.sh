@@ -1,9 +1,9 @@
 #!/bin/bash +x
-
+# Under develope, don't use it
 USR1=cbass
 
 # Setup keyboard layout
-#echo -e "\n[Layout]\nLayoutList=latam\nUse=true" >>/home/$USR1/.config/kxkbrc
+#echo -e "\n[Layout]\nLayoutList=latam\nModel=acer_laptop\nUse=true" >>/home/$USR1/.config/kxkbrc
 
 # Disable splash
 #echo -e "[KSplash]\nEngine=none\nTheme=None" >/home/$USR1/.config/ksplashrc
