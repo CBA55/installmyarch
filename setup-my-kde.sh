@@ -2,7 +2,7 @@
 # Under develope, don't use it
 USR1=cbass
 
-# Setup keyboard layout
+ # Setup keyboard layout
 #echo -e "\n[Layout]\nLayoutList=latam\nModel=acer_laptop\nUse=true" >>/home/$USR1/.config/kxkbrc
 
 # Disable splash
@@ -30,3 +30,8 @@ sed -i '24 i triggerLidActionWhenExternalMonitorPresent=false' $powerfile
 sed -i '43 i triggerLidActionWhenExternalMonitorPresent=false' $powerfile
 sed -i '47 i suspendThenHibernate=false' $powerfile
 
+# Set numlock on startup
+echo -e "\n[Layout]\n[Keyboard]\nNumLock=0" >>/home/$USR1/.config/kcminputrc
+
+# Setup touchpad buttons
+echo -e "[SYNA7DB5:01 06CB:CD41 Touchpad]\nclickMethodAreas=false\nclickMethodClickfinger=true\ntapToClick=true\n" >/home/$USR1/.config/touchpadxlibinputrc

@@ -457,8 +457,6 @@ if [[ -n $USR1 ]]; then
   $CHR "useradd -m -g users -G wheel,power,storage,input -s /bin/zsh $USR1"
   text g "\n[+] Setting password for $USR1\n"
   $CHR "echo $USR1:$PASS1 | chpasswd"
-#  text g "\n[+] Setting zshell for $USR1\n"
-#  $CHR "chsh -s /bin/zsh $USR1"
   text g "\n[+] Setting basic config for Sudo\n"
   $CHR "sed -i '82 s/# *//' /etc/sudoers"
   text g "\n[+] Activating syntax highlighting for nano\n"
@@ -473,8 +471,7 @@ if [[ -n $USR1 ]]; then
   reverse_clock
   YAYINSTALL="sudo -u $USR1 yay --noconfirm --color always -S"
   $CHR "yay -Sy"
-  text g "\n[+] Installing nvidia-xrun and selected packages\n"
-#  $CHR "$YAYINSTALL nvidia-xrun-git"
+  text g "\n[+] Installing selected packages from AUR\n"
   $CHR "$YAYINSTALL $YAY1"
 else
   text g "\n[+] Activating syntax highlighting for nano\n"
