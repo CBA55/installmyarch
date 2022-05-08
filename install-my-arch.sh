@@ -376,6 +376,7 @@ fi
 
 clockfor="[*] Start Base Instalation... "
 reverse_clock
+pacstrap $RPOINT $BASE
 
 text g "\n [+] Updating FSTAB\n"
 genfstab -U $RPOINT >> $RPOINT/etc/fstab
