@@ -331,7 +331,7 @@ Data | Data Partition:\Z4$MDISP\Zn | Size:\Z4$MSIZE\Zn | Mount:\Z4$MPOINT\Zn\n\n
 restart
 #------------------[ START INSTALLATION ]---------------------
 
-# Commands
+# Command shortcuts
 CHR="arch-chroot $RPOINT sh -c"
 INSTALL="pacman -S --color always --noconfirm"
 SEARCH="pacman -Ss --color always"
@@ -509,6 +509,10 @@ else
   text g "\n[+] Enable vmtool service\n"
   $CHR "systemctl enable vmtoolsd.service"
 fi
+
+## TESTING: adjustments for specific aplications
+[[ $(pacman -Qs wireshark-qt) ]] && text g "\n[+] Append $USR1 to Wireshark group" && usermod -a -G wireshark $USR1
+[[ $(pacman -Qs vmware-workstation) ]] && text g "\n[+] Load modules for vmware" && modprobe -a vmw_vmci vmmon
 
 #------------------[ MODIFY KDE FILES ]---------------------
 
