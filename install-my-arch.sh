@@ -2,7 +2,7 @@
 # Unnatended Archlinux Installer - by Sebastian Sanchez Baldoncini
 # -------------------------------
 # Store log file
-SYSERR=/mnt/install-my-arch.sh.$$
+SYSERR=$RPOINT/install-my-arch.sh.$$
 
 # Store menu options selected by the user
 INPUT=/tmp/menu.sh.$$
@@ -181,7 +181,8 @@ USR1="cbass"
 HPOINT="$RPOINT/home"
 MPOINT="/run/ssd"
 EFIFLAG="No"
-IMPFLAG="No"
+IMPORTFILES="No"
+IMPORTPATH="/run/ssd/BACKUP-SYS/ARCH"
 
 # Install Settings
 declare -i g=0
@@ -200,6 +201,7 @@ while [[ $g = 0 ]]; do
   " [ ] Home" "Part:\Z4$HDISP\Zn | Size:\Z4$HSIZE\Zn | Mount:\Z4$HPOINT\Zn" \
   " [ ] Host" "Hostname:\Z4$HOST\Zn" \
   " [ ] Ntfs" "Data Partition:\Z4$MDISP\Zn | Size:\Z4$MSIZE\Zn | Mount:\Z4$MPOINT\Zn" \
+  " [ ] Kde" "Import custom files:\Z4$IMPORTFILES\Zn | Path:\Z4$IMPORTPATH\Zn" \
   " [!] DONE" "\Zb\Z6NEXT STEP\Zn" \
   2>"${INPUT}"
   restart
@@ -307,7 +309,7 @@ dialog --colors --clear --backtitle "UNNATENDED ARCHLINUX INSTALLER - CONFIRM IN
 --no-label "RESTART" \
 --yesno \
 "\nREQUIRED:\n
-Flag | Install Profile:\Z4$TYPEFLAG\Zn | Import Custom Config:\Z4$IMPFLAG\Zn\n
+Flag | Install Profile:\Z4$TYPEFLAG\Zn | Import Custom Config:\Z4$IMPORTFILES\Zn\n
 Boot | Partition:\Z4$BDISP\Zn | Size:\Z4$BSIZE\Zn | Mount:\Z4$BPOINT\Zn\n
  Efi | Partition:\Z4$EDISP\Zn | Size:\Z4$ESIZE\Zn | Mount:\Z4$EPOINT\Zn | Format:\Z4$EFIFLAG\Zn\n
 Root | Root Partition:\Z4$RDISP\Zn | Size:\Z4$RSIZE\Zn | Root pass:\Z4$PASSFLAG\Zn\n
@@ -471,6 +473,7 @@ if [[ -n $USR1 ]]; then
   # OH-MY-ZSHELL + POWERLEVEL10K
   text g "\n[+] Installing and configure oh-my-zshell + powerlevel10k theme\n"
   $CHR "sudo -u $USR1 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
+  $CHR "sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
   $CHR "$PARUINSTALL ttf-meslo-nerd-font-powerlevel10k"
   $CHR "sudo -u $USR1 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
   # AUR packages
