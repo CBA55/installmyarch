@@ -2,7 +2,7 @@
 # Unnatended Archlinux Installer - by Sebastian Sanchez Baldoncini
 # -------------------------------
 # Store log file
-SYSERR=$RPOINT/install-my-arch.sh.$$
+SYSERR=/tmp/install-my-arch.sh.$$
 
 # Store menu options selected by the user
 INPUT=/tmp/menu.sh.$$
@@ -334,19 +334,19 @@ reverse_clock
 
 # Format Root Partition
 text g "\n[+] Formating root partition $RDISP\n"
-mkfs.ext4 -F /dev/$RDISP &> $SYSERR
+mkfs.ext4 -F /dev/$RDISP
 # Format boot and EFI
 text g "\n[+] Formating Boot partition\n"
-mkfs.ext4 -F /dev/$BDISP &>> $SYSERR
+mkfs.ext4 -F /dev/$BDISP
 text g "\n[+] arch label for Boot partition\n"
-tune2fs -L arch /dev/$BDISP &>> $SYSERR
+tune2fs -L arch /dev/$BDISP
 # Format Efi
-[[ $EFIFLAG = "Yes" ]] && text g "\n[+] Formating Efi partition\n" && mkfs.vfat -F 32 /dev/$EDISP &>> $SYSERR
+[[ $EFIFLAG = "Yes" ]] && text g "\n[+] Formating Efi partition\n" && mkfs.vfat -F 32 /dev/$EDISP
 [[ $EFIFLAG = "No" ]] && text y "\n[+] Skiping Efi partition format\n" 
 # Create user account
 if [[ -n $USR1 ]]; then
   text g "\n[+] Formating home partition $HDISP\n"
-  mkfs.ext4 -F /dev/$HDISP &>> $SYSERR
+  mkfs.ext4 -F /dev/$HDISP
 fi
 
 #------------------[ CHECK DIRS AND MOUNT ]---------------------
@@ -386,119 +386,119 @@ clockfor="[*] Starting Arch-chroot session... "
 reverse_clock
 
 text g "\n[+] Setting Time Zone\n"
-$CHR "ln -sf /usr/share/zoneinfo/America/Argentina/Buenos_Aires /etc/localtime" &>> $SYSERR
+$CHR "ln -sf /usr/share/zoneinfo/America/Argentina/Buenos_Aires /etc/localtime"
 
 text g "\n[+] Generating /etc/adjtime\n"
-$CHR "hwclock --systohc" &>> $SYSERR
+$CHR "hwclock --systohc"
 
 text g "\n[+] Enable es_AR language\n"
-$CHR "sed -i '/es_AR/s/^#//g' /etc/locale.gen" &>> $SYSERR
+$CHR "sed -i '/es_AR/s/^#//g' /etc/locale.gen"
 
 text g "\n[+] Generating locale\n"
-$CHR "locale-gen" &>> $SYSERR
-$CHR "echo LANG=es_AR.UTF-8 > /etc/locale.conf" &>> $SYSERR
+$CHR "locale-gen"
+$CHR "echo LANG=es_AR.UTF-8 > /etc/locale.conf"
 
 text g "\n[+] Setting Latam Keymap\n"
-$CHR "echo KEYMAP=la-latin1 >> /etc/vconsole.conf" &>> $SYSERR
+$CHR "echo KEYMAP=la-latin1 >> /etc/vconsole.conf"
 
 if [[ -n $HOST ]]; then
   text g "\n[+] Setting hostname: $HOST\n"
-  $CHR "echo $HOST > /etc/hostname" &>> $SYSERR
+  $CHR "echo $HOST > /etc/hostname"
 fi
 
 text g "\n[+] Creating linux kernel image\n"
-$CHR "mkinitcpio -p linux" &>> $SYSERR
+$CHR "mkinitcpio -p linux"
 
 text g "\n[+] Setting Root user password\n"
-$CHR "echo root:$PASS | chpasswd" &>> $SYSERR
+$CHR "echo root:$PASS | chpasswd"
 
 text g "\n[+] Enable multilib repo\n"
-$CHR "sed -i '93,94 s/# *//' /etc/pacman.conf" &>> $SYSERR
+$CHR "sed -i '93,94 s/# *//' /etc/pacman.conf"
 
 text g "\n[+] Setting services timeout\n"
-$CHR "sed -i '44,45 s/# *//' /etc/systemd/system.conf" &>> $SYSERR
-$CHR "sed -i 's/90s/9s/g' /etc/systemd/system.conf" &>> $SYSERR
+$CHR "sed -i '44,45 s/# *//' /etc/systemd/system.conf"
+$CHR "sed -i 's/90s/9s/g' /etc/systemd/system.conf"
 
 text g "\n[+] Enabñe IPTABLES with basic configuration \n"
-$CHR "cp /etc/iptables/simple_firewall.rules /etc/iptables/iptables.rules" &>> $SYSERR
-$CHR "systemctl enable iptables" &>> $SYSERR
+$CHR "cp /etc/iptables/simple_firewall.rules /etc/iptables/iptables.rules"
+$CHR "systemctl enable iptables"
 
 text g "\n[+] Updating Pacman bases\n"
 $CHR "pacman -Sy"
 
 text g "\n[+] Installing Xorg packages\n"
-$CHR "$INSTALL xorg" &>> $SYSERR
+$CHR "$INSTALL xorg"
 
 text g "\n[+] Installing ZSH for root\n"
-$CHR "$INSTALL zsh zsh-completions" &>> $SYSERR
-$CHR "chsh -s /bin/zsh" &>> $SYSERR
+$CHR "$INSTALL zsh zsh-completions"
+$CHR "chsh -s /bin/zsh"
 
 text g "\n[+] Installing Enviroment packages\n"
-$CHR "$INSTALL $ENV" &>> $SYSERR
+$CHR "$INSTALL $ENV"
 
 text g "\n[+] Enable SDDM service\n"
-$CHR "systemctl enable sddm" &>> $SYSERR
+$CHR "systemctl enable sddm"
 
 text g "\n[+] Enable NetworkManager service\n"
-$CHR "systemctl enable NetworkManager" &>> $SYSERR
+$CHR "systemctl enable NetworkManager"
 
 text g "\n[+] Installing Bootloader with fixed path\n"
-$CHR "$INSTALL refind" &>> $SYSERR
-$CHR "refind-install" &>> $SYSERR
+$CHR "$INSTALL refind"
+$CHR "refind-install"
 _BPOINT=$(echo "$BPOINT" | sed 's/[/]mnt//g')
-$CHR "sed -i 's/archisobasedir=arch/ro root=\/dev\/$RDISP/g' $_BPOINT/refind_linux.conf" &>> $SYSERR
+$CHR "sed -i 's/archisobasedir=arch/ro root=\/dev\/$RDISP/g' $_BPOINT/refind_linux.conf"
 
 clockfor="[!] Installing community packages selected... "
 reverse_clock
-$CHR "$INSTALL $PAC1" &>> $SYSERR
+$CHR "$INSTALL $PAC1"
 
 # User account
 if [[ -n $USR1 ]]; then
   text g "\n[+] Creating user $USR1 with common groups\n"
-  $CHR "useradd -m -g users -G wheel,power,storage,input -s /bin/zsh $USR1" &>> $SYSERR
+  $CHR "useradd -m -g users -G wheel,power,storage,input -s /bin/zsh $USR1"
   text g "\n[+] Setting password for $USR1\n"
-  $CHR "echo $USR1:$PASS1 | chpasswd" &>> $SYSERR
+  $CHR "echo $USR1:$PASS1 | chpasswd"
   text g "\n[+] Setting basic config for Sudo\n"
-  $CHR "sed -i '82 s/# *//' /etc/sudoers" &>> $SYSERR
+  $CHR "sed -i '82 s/# *//' /etc/sudoers"
   text g "\n[+] Activating syntax highlighting for nano\n"
-  $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > /home/$USR1/.nanorc" &>> $SYSERR
-  $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc" &>> $SYSERR
+  $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > /home/$USR1/.nanorc"
+  $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc"
   # AUR Helper 'Paru'
   text g "\n[+] Installing Paru - AUR helper\n"
-  $CHR "$INSTALL git" &>> $SYSERR
-  $CHR "git clone https://aur.archlinux.org/paru.git" &>> $SYSERR
-  $CHR "chown $USR1:users /paru;cd /paru;sudo -u $USR1 makepkg --noconfirm -sci" &>> $SYSERR
-  $CHR "rm -rf /paru" &>> $SYSERR
+  $CHR "$INSTALL git"
+  $CHR "git clone https://aur.archlinux.org/paru.git"
+  $CHR "chown $USR1:users /paru;cd /paru;sudo -u $USR1 makepkg --noconfirm -sci"
+  $CHR "rm -rf /paru"
   PARUINSTALL="sudo -u $USR1 paru --noconfirm --color always -S"
   # OH-MY-ZSHELL + POWERLEVEL10K
   text g "\n[+] Installing and configure oh-my-zshell + powerlevel10k theme\n"
-  $CHR "sudo -u $USR1 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"" &>> $SYSERR
-  $CHR "sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"" &>> $SYSERR
-  $CHR "$PARUINSTALL ttf-meslo-nerd-font-powerlevel10k" &>> $SYSERR
-  $CHR "sudo -u $USR1 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" &>> $SYSERR
+  $CHR "sudo -u $USR1 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
+  $CHR "sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
+  $CHR "$PARUINSTALL ttf-meslo-nerd-font-powerlevel10k"
+  $CHR "sudo -u $USR1 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
   # AUR packages
   clockfor="[!] Installing AUR packages\n"
   reverse_clock
-  $CHR "paru -Sy" &>> $SYSERR
-  $CHR "$PARUINSTALL $AUR1" &>> $SYSERR
+  $CHR "paru -Sy"
+  $CHR "$PARUINSTALL $AUR1"
 else
   text g "\n[+] Activating syntax highlighting for nano\n"
-  $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > ~/.nanorc" &>> $SYSERR
+  $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > ~/.nanorc"
 fi
 
 # Drivers packages
 if [ $TYPEFLAG = "Native" ]; then
   clockfor="[!] Installing drivers for Native profile... "
   reverse_clock
-  $CHR "$INSTALL $DVRNATIVE" &>> $SYSERR
+  $CHR "$INSTALL $DVRNATIVE"
   text g "\n[+] Enable Bluetooth service\n"
-  $CHR "systemctl enable bluetooth" &>> $SYSERR
+  $CHR "systemctl enable bluetooth"
 else
   clockfor="[!] Installing drivers for Vmware profile... "
   reverse_clock
-  $CHR "$INSTALL $DVRVMWARE" &>> $SYSERR
+  $CHR "$INSTALL $DVRVMWARE"
   text g "\n[+] Enable vmtool service\n"
-  $CHR "systemctl enable vmtoolsd.service" &>> $SYSERR
+  $CHR "systemctl enable vmtoolsd.service"
 fi
 
 #------------------[ UMOUNT AND REBOOT ]---------------------
@@ -509,5 +509,5 @@ fi
   reboot
 
 # If temp files found, delete
-[ -f $OUTPUT ] && rm $OUTPUT
-[ -f $INPUT ] && rm $INPUT
+#[ -f $OUTPUT ] && rm $OUTPUT
+#[ -f $INPUT ] && rm $INPUT
