@@ -280,6 +280,15 @@ while [[ $g = 0 ]]; do
     MPOINT=$(display input "DATA MOUNT POINT" "$MPOINT")
     MSIZE=$(autodetect size_show $MDISP)
     ;;
+    " [ ] Kde")
+    IMPORTFILES=$(dialog --colors --clear --title "\Z7[ CUSTOMIZE KDE ]\Zn" \
+    --yesno "\n This will import custom files." 7 65 \
+    3>&1 1>&2 2>&3 3>&- \
+    )
+    [[ $? = 0 ]] && IMPORTFILES="Yes"
+    [[ $? = 1 ]] && IMPORTFILES="No"
+    IMPORTPATH=$(display input "IMPORT PATH" "$IMPORTPATH")
+    ;;
     " [!] DONE") g=1;;
   esac
 done
@@ -500,6 +509,56 @@ else
   text g "\n[+] Enable vmtool service\n"
   $CHR "systemctl enable vmtoolsd.service"
 fi
+
+#------------------[ MODIFY KDE FILES ]---------------------
+
+# Setup keyboard layout
+text g "\n[+] Keyboard: Setting latam layout\n"
+echo -e "\n[Layout]\nLayoutList=latam\nModel=acer_laptop\nUse=true" >>/home/$USR1/.config/kxkbrc
+
+# Disable splash
+text g "\n[+] Diabling ksplash\n"
+echo -e "[KSplash]\nEngine=none\nTheme=None" >/home/$USR1/.config/ksplashrc
+
+# Disable screen locker
+text g "\n[+] Disabling screen locker\n"
+echo -e "\n[Daemon]\nAutolock=false\nLockOnResume=false" >>/home/$USR1/.config/kscreenlockerrc
+
+# Setup powerdevil settings
+text g "\n[+] Configuring energy options\n"
+powerfile="/home/$USR1/.config/powermanagementprofilesrc"
+## Change values
+sed -i '12 s/1/0/g' $powerfile
+sed -i '13 s/16/8/g' $powerfile
+sed -i '28 s/16/8/g' $powerfile
+sed -i '20 s/300/600/g' $powerfile
+sed -i '24 s/120000/300000/g' $powerfile
+sed -i '13 s/16/8/g' $powerfile
+## Delete lines
+sed -i '3d;4d;5d;6d;7d;8d;9d;30d;31d;32d;33d' $powerfile
+## Add lines
+sed -i '4 i [AC][BrightnessControl]' $powerfile
+sed -i '5 i value=100' $powerfile
+sed -i '8 i triggerLidActionWhenExternalMonitorPresent=true' $powerfile
+sed -i '24 i triggerLidActionWhenExternalMonitorPresent=false' $powerfile
+sed -i '43 i triggerLidActionWhenExternalMonitorPresent=false' $powerfile
+sed -i '47 i suspendThenHibernate=false' $powerfile
+
+# Set numlock on startup
+text g "\n[+] Setting numlock on startup\n"
+echo -e "\n[Layout]\n[Keyboard]\nNumLock=0" >>/home/$USR1/.config/kcminputrc
+
+# Setup touchpad buttons
+text g "\n[+] Setting touchpad options\n"
+echo -e "[SYNA7DB5:01 06CB:CD41 Touchpad]\nclickMethodAreas=false\nclickMethodClickfinger=true\ntapToClick=true\n" >/home/$USR1/.config/touchpadxlibinputrc
+
+# Setup kde-globals
+## Icons
+text g "\n[+] KDE: Setting papirus icons theme\n"
+echo -e "\n[Icons]\nTheme=Papirus-Dark" >>/home/$USR1/.config/kdeglobals
+## Dark theme + delete without confikrm + singleclick
+text g "\n[+] KDE: Changing to dark theme and single click\n"
+echo -e "\n[KDE]\nLookAndFeelPackage=org.kde.breezedark.desktop\nShowDeleteCommand=false\nSingleClick=false" >>/home/$USR1/.config/kdeglobals
 
 #------------------[ UMOUNT AND REBOOT ]---------------------
 
