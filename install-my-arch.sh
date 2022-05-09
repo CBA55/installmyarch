@@ -75,9 +75,9 @@ function autodetect()
     size_calc)  lsblk |grep -iw $2 |awk '{print $4}' |tr -d G |tr -d M |tr "," ".";;
     efi)  EDISP=$(fdisk -l |grep EFI |awk '{print $1}' |sed 's/\/dev\///');;
     pv) PV=$(pvs |awk 'NR>1{print $1}' |sed -r 's/.{5}//');;
-    mountothers)  if cat /proc/mounts | grep -w "$2" > /dev/null; then
+    mountothers)  if cat /proc/mounts | grep -w "$2"; then
                     text y "[*] $4\e[0m: Ya esta montado"
-                  elif mount /dev/$2 $3 &>/dev/null; then
+                  elif mount /dev/$2 $3 &>> $SYSERR; then
                     text g "[+] $4\e[0m: Montado correctamente"
                   else
                     text r "[!] $4\e[0m: Error montar"
@@ -85,7 +85,7 @@ function autodetect()
                   fi
                   ;;
     makedirs) if [[ ! -d $2 ]]; then
-                if mkdir -p $2 &>/dev/null; then
+                if mkdir -p $2 &>> $SYSERR; then
                   text g "[+] $3\e[0m: Se creo el directorio"
                 else
                   text r "[!] $3\e[0m: Error al crear directorio"
@@ -334,19 +334,19 @@ reverse_clock
 
 # Format Root Partition
 text g "\n[+] Formating root partition $RDISP\n"
-mkfs.ext4 -F /dev/$RDISP
+mkfs.ext4 -F /dev/$RDISP &> $SYSERR
 # Format boot and EFI
 text g "\n[+] Formating Boot partition\n"
-mkfs.ext4 -F /dev/$BDISP
+mkfs.ext4 -F /dev/$BDISP &>> $SYSERR
 text g "\n[+] arch label for Boot partition\n"
-tune2fs -L arch /dev/$BDISP
+tune2fs -L arch /dev/$BDISP &>> $SYSERR
 # Format Efi
-[[ $EFIFLAG = "Yes" ]] && text g "\n[+] Formating Efi partition\n" && mkfs.vfat -F 32 /dev/$EDISP
-[[ $EFIFLAG = "No" ]] && text y "\n[+] Skiping Efi partition format\n"
+[[ $EFIFLAG = "Yes" ]] && text g "\n[+] Formating Efi partition\n" && mkfs.vfat -F 32 /dev/$EDISP &>> $SYSERR
+[[ $EFIFLAG = "No" ]] && text y "\n[+] Skiping Efi partition format\n" 
 # Create user account
 if [[ -n $USR1 ]]; then
   text g "\n[+] Formating home partition $HDISP\n"
-  mkfs.ext4 -F /dev/$HDISP
+  mkfs.ext4 -F /dev/$HDISP &>> $SYSERR
 fi
 
 #------------------[ CHECK DIRS AND MOUNT ]---------------------
@@ -373,7 +373,7 @@ fi
 
 clockfor="[*] Start Base Instalation... "
 reverse_clock
-pacstrap $RPOINT $BASE
+pacstrap $RPOINT $BASE 
 
 text g "\n [+] Updating FSTAB\n"
 genfstab -U $RPOINT >> $RPOINT/etc/fstab
@@ -386,71 +386,71 @@ clockfor="[*] Starting Arch-chroot session... "
 reverse_clock
 
 text g "\n[+] Setting Time Zone\n"
-$CHR "ln -sf /usr/share/zoneinfo/America/Argentina/Buenos_Aires /etc/localtime"
+$CHR "ln -sf /usr/share/zoneinfo/America/Argentina/Buenos_Aires /etc/localtime" &>> $SYSERR
 
 text g "\n[+] Generating /etc/adjtime\n"
-$CHR "hwclock --systohc"
+$CHR "hwclock --systohc" &>> $SYSERR
 
 text g "\n[+] Enable es_AR language\n"
-$CHR "sed -i '/es_AR/s/^#//g' /etc/locale.gen"
+$CHR "sed -i '/es_AR/s/^#//g' /etc/locale.gen" &>> $SYSERR
 
 text g "\n[+] Generating locale\n"
-$CHR "locale-gen"
-$CHR "echo LANG=es_AR.UTF-8 > /etc/locale.conf"
+$CHR "locale-gen" &>> $SYSERR
+$CHR "echo LANG=es_AR.UTF-8 > /etc/locale.conf" &>> $SYSERR
 
 text g "\n[+] Setting Latam Keymap\n"
-$CHR "echo KEYMAP=la-latin1 >> /etc/vconsole.conf"
+$CHR "echo KEYMAP=la-latin1 >> /etc/vconsole.conf" &>> $SYSERR
 
 if [[ -n $HOST ]]; then
   text g "\n[+] Setting hostname: $HOST\n"
-  $CHR "echo $HOST > /etc/hostname"
+  $CHR "echo $HOST > /etc/hostname" &>> $SYSERR
 fi
 
 text g "\n[+] Creating linux kernel image\n"
-$CHR "mkinitcpio -p linux"
+$CHR "mkinitcpio -p linux" &>> $SYSERR
 
 text g "\n[+] Setting Root user password\n"
-$CHR "echo root:$PASS | chpasswd"
+$CHR "echo root:$PASS | chpasswd" &>> $SYSERR
 
 text g "\n[+] Enable multilib repo\n"
-$CHR "sed -i '93,94 s/# *//' /etc/pacman.conf"
+$CHR "sed -i '93,94 s/# *//' /etc/pacman.conf" &>> $SYSERR
 
 text g "\n[+] Setting services timeout\n"
-$CHR "sed -i '44,45 s/# *//' /etc/systemd/system.conf"
-$CHR "sed -i 's/90s/9s/g' /etc/systemd/system.conf"
+$CHR "sed -i '44,45 s/# *//' /etc/systemd/system.conf" &>> $SYSERR
+$CHR "sed -i 's/90s/9s/g' /etc/systemd/system.conf" &>> $SYSERR
 
 text g "\n[+] Enabñe IPTABLES with basic configuration \n"
-$CHR "cp /etc/iptables/simple_firewall.rules /etc/iptables/iptables.rules"
-$CHR "systemctl enable iptables"
+$CHR "cp /etc/iptables/simple_firewall.rules /etc/iptables/iptables.rules" &>> $SYSERR
+$CHR "systemctl enable iptables" &>> $SYSERR
 
 text g "\n[+] Updating Pacman bases\n"
 $CHR "pacman -Sy"
 
 text g "\n[+] Installing Xorg packages\n"
-$CHR "$INSTALL xorg"
+$CHR "$INSTALL xorg" &>> $SYSERR
 
 text g "\n[+] Installing ZSH for root\n"
-$CHR "$INSTALL zsh zsh-completions"
-$CHR "chsh -s /bin/zsh"
+$CHR "$INSTALL zsh zsh-completions" &>> $SYSERR
+$CHR "chsh -s /bin/zsh" &>> $SYSERR
 
 text g "\n[+] Installing Enviroment packages\n"
-$CHR "$INSTALL $ENV"
+$CHR "$INSTALL $ENV" &>> $SYSERR
 
 text g "\n[+] Enable SDDM service\n"
-$CHR "systemctl enable sddm"
+$CHR "systemctl enable sddm" &>> $SYSERR
 
 text g "\n[+] Enable NetworkManager service\n"
-$CHR "systemctl enable NetworkManager"
+$CHR "systemctl enable NetworkManager" &>> $SYSERR
 
 text g "\n[+] Installing Bootloader with fixed path\n"
-$CHR "$INSTALL refind"
-$CHR "refind-install"
+$CHR "$INSTALL refind" &>> $SYSERR
+$CHR "refind-install" &>> $SYSERR
 _BPOINT=$(echo "$BPOINT" | sed 's/[/]mnt//g')
-$CHR "sed -i 's/archisobasedir=arch/ro root=\/dev\/$RDISP/g' $_BPOINT/refind_linux.conf"
+$CHR "sed -i 's/archisobasedir=arch/ro root=\/dev\/$RDISP/g' $_BPOINT/refind_linux.conf" &>> $SYSERR
 
 clockfor="[!] Installing community packages selected... "
 reverse_clock
-$CHR "$INSTALL $PAC1"
+$CHR "$INSTALL $PAC1" &>> $SYSERR
 
 # User account
 if [[ -n $USR1 ]]; then
