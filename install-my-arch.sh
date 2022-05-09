@@ -360,7 +360,7 @@ fi
 
 #------------------[ CHECK DIRS AND MOUNT ]---------------------
 
-clockfor="[*] Start partitions mounting... "
+clockfor="\n[*] Mounting partitions\n "
 reverse_clock
 
 # Create and mount root
@@ -380,11 +380,11 @@ fi
 
 #------------------[ PACSTRAP AND FSTAB ]---------------------
 
-clockfor="[*] Start Base Instalation... "
+clockfor="\n[*] Start Base Install\n"
 reverse_clock
 pacstrap $RPOINT $BASE 
 
-text g "\n [+] Updating FSTAB\n"
+text g "\n[+] Updating FSTAB\n"
 genfstab -U $RPOINT >> $RPOINT/etc/fstab
 # Insert ntfs Data Partition in FSTAB
 [[ -n $MDISP ]] && echo "UUID=$(lsblk -lo NAME,UUID |grep -w $MDISP |awk '{print $2}') $MPOINT ntfs-3g rw,users,umask=0022,uid=1000,gid=100 0 0" >> $RPOINT/etc/fstab
