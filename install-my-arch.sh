@@ -455,50 +455,50 @@ $CHR "$INSTALL $PAC1" &>> $SYSERR
 # User account
 if [[ -n $USR1 ]]; then
   text g "\n[+] Creating user $USR1 with common groups\n"
-  $CHR "useradd -m -g users -G wheel,power,storage,input -s /bin/zsh $USR1"
+  $CHR "useradd -m -g users -G wheel,power,storage,input -s /bin/zsh $USR1" &>> $SYSERR
   text g "\n[+] Setting password for $USR1\n"
-  $CHR "echo $USR1:$PASS1 | chpasswd"
+  $CHR "echo $USR1:$PASS1 | chpasswd" &>> $SYSERR
   text g "\n[+] Setting basic config for Sudo\n"
-  $CHR "sed -i '82 s/# *//' /etc/sudoers"
+  $CHR "sed -i '82 s/# *//' /etc/sudoers" &>> $SYSERR
   text g "\n[+] Activating syntax highlighting for nano\n"
-  $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > /home/$USR1/.nanorc"
-  $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc"
+  $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > /home/$USR1/.nanorc" &>> $SYSERR
+  $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc" &>> $SYSERR
   # AUR Helper 'Paru'
   text g "\n[+] Installing Paru - AUR helper\n"
-  $CHR "$INSTALL git"
-  $CHR "git clone https://aur.archlinux.org/paru.git"
-  $CHR "chown $USR1:users /paru;cd /paru;sudo -u $USR1 makepkg --noconfirm -sci"
-  $CHR "rm -rf /paru"
+  $CHR "$INSTALL git" &>> $SYSERR
+  $CHR "git clone https://aur.archlinux.org/paru.git" &>> $SYSERR
+  $CHR "chown $USR1:users /paru;cd /paru;sudo -u $USR1 makepkg --noconfirm -sci" &>> $SYSERR
+  $CHR "rm -rf /paru" &>> $SYSERR
   PARUINSTALL="sudo -u $USR1 paru --noconfirm --color always -S"
   # OH-MY-ZSHELL + POWERLEVEL10K
   text g "\n[+] Installing and configure oh-my-zshell + powerlevel10k theme\n"
-  $CHR "sudo -u $USR1 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
-  $CHR "sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
-  $CHR "$PARUINSTALL ttf-meslo-nerd-font-powerlevel10k"
-  $CHR "sudo -u $USR1 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+  $CHR "sudo -u $USR1 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"" &>> $SYSERR
+  $CHR "sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"" &>> $SYSERR
+  $CHR "$PARUINSTALL ttf-meslo-nerd-font-powerlevel10k" &>> $SYSERR
+  $CHR "sudo -u $USR1 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" &>> $SYSERR
   # AUR packages
   clockfor="[!] Installing AUR packages\n"
   reverse_clock
-  $CHR "paru -Sy"
-  $CHR "$PARUINSTALL $AUR1"
+  $CHR "paru -Sy" &>> $SYSERR
+  $CHR "$PARUINSTALL $AUR1" &>> $SYSERR
 else
   text g "\n[+] Activating syntax highlighting for nano\n"
-  $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > ~/.nanorc"
+  $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > ~/.nanorc" &>> $SYSERR
 fi
 
 # Drivers packages
 if [ $TYPEFLAG = "Native" ]; then
   clockfor="[!] Installing drivers for Native profile... "
   reverse_clock
-  $CHR "$INSTALL $DVRNATIVE"
+  $CHR "$INSTALL $DVRNATIVE" &>> $SYSERR
   text g "\n[+] Enable Bluetooth service\n"
-  $CHR "systemctl enable bluetooth"
+  $CHR "systemctl enable bluetooth" &>> $SYSERR
 else
   clockfor="[!] Installing drivers for Vmware profile... "
   reverse_clock
-  $CHR "$INSTALL $DVRVMWARE"
+  $CHR "$INSTALL $DVRVMWARE" &>> $SYSERR
   text g "\n[+] Enable vmtool service\n"
-  $CHR "systemctl enable vmtoolsd.service"
+  $CHR "systemctl enable vmtoolsd.service" &>> $SYSERR
 fi
 
 #------------------[ UMOUNT AND REBOOT ]---------------------
