@@ -480,7 +480,7 @@ if [[ -n $USR1 ]]; then
   $CHR "rm -rf /paru"
   PARUINSTALL="sudo -u $USR1 paru --noconfirm --color always -S"
   # Allow PARU without pass (temporary)
-  $CHR "echo -e '%wheel ALL=(ALL) NOPASSWD: /usr/bin/paru' >>/etc/sudoers"
+  #$CHR "echo -e '%wheel ALL=(ALL) NOPASSWD: /usr/bin/paru' >>/etc/sudoers"
   # OH-MY-ZSHELL + POWERLEVEL10K
   text g "\n[+] Installing and configure oh-my-zshell + powerlevel10k theme\n"
   $CHR "sudo -u $USR1 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
