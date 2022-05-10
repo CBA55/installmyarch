@@ -14,7 +14,7 @@ COM=$(echo $0 | sed 's/install-my-arch.sh/com-packages.cfg/')
 AUR=$(echo $0 | sed 's/install-my-arch.sh/aur-packages.cfg/')
 
 # trap and delete temp files
-trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; rm $SYSERR; exit" SIGHUP SIGINT SIGTERM
+trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; exit" SIGHUP SIGINT SIGTERM
 
 # Main packages
 BASE="base base-devel linux linux-firmware linux-headers man man-pages"
@@ -74,7 +74,7 @@ function autodetect()
     pv) PV=$(pvs |awk 'NR>1{print $1}' |sed -r 's/.{5}//');;
     mountothers)  if cat /proc/mounts | grep -w "$2"; then
                     text y "[*] $4\e[0m: Ya esta montado"
-                  elif mount /dev/$2 $3 &>> $SYSERR; then
+                  elif mount /dev/$2 $3; then
                     text g "[+] $4\e[0m: Montado correctamente"
                   else
                     text r "[!] $4\e[0m: Error montar"
@@ -82,7 +82,7 @@ function autodetect()
                   fi
                   ;;
     makedirs) if [[ ! -d $2 ]]; then
-                if mkdir -p $2 &>> $SYSERR; then
+                if mkdir -p $2; then
                   text g "[+] $3\e[0m: Se creo el directorio"
                 else
                   text r "[!] $3\e[0m: Error al crear directorio"
