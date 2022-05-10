@@ -570,7 +570,7 @@ $CHR "echo -e "\n[KDE]\nLookAndFeelPackage=org.kde.breezedark.desktop\nShowDelet
 ## Disable numlock at startup
 $CHR "sed -i '/Numlock/d' /etc/sddm.conf.d/kde_settings.conf"
 ## Change sddm default theme
-$CHR "sed i 's/McMojave/breeze/g' /etc/sddm.conf.d/kde_settings.conf"
+$CHR "sed -i 's/McMojave/breeze/g' /etc/sddm.conf.d/kde_settings.conf"
 
 #------------------[ UMOUNT AND REBOOT ]---------------------
 
