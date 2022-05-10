@@ -378,7 +378,7 @@ fi
 #------------------[ PACSTRAP AND FSTAB ]---------------------
 
 # Store log file
-exec > $RPOINT/log/install_log.sh.$$ 2>&1
+#exec > $RPOINT/log/install_log.sh.$$ 2>&1
 
 clockfor="[*] Start Base Install"
 reverse_clock
