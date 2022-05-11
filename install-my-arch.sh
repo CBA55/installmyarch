@@ -14,7 +14,7 @@ COM=$(echo $0 | sed 's/install-my-arch.sh/com-packages.cfg/')
 AUR=$(echo $0 | sed 's/install-my-arch.sh/aur-packages.cfg/')
 
 # trap and delete temp files
-trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; exit" SIGHUP SIGINT SIGTERM
+trap "rm $OUTPUT; rm $PARTS; rm $LAYOUTS; rm $INPUT; umount -R $RPOINT; exit" SIGHUP SIGINT SIGTERM
 
 # Main packages
 BASE="base base-devel linux linux-firmware linux-headers man man-pages"
@@ -161,9 +161,9 @@ done
 #------------------[ SYSTEM SETTINGS MENU ]---------------------
 
 # Merge Storage Info
-echo -e "\nLAYOUT:" >$LAYOUTS
+echo -e "\nDISKS LAYOUT:" >$LAYOUTS
 autodetect layout >>$LAYOUTS
-echo -e "\nSELECTED:" >>$LAYOUTS
+echo -e "\nSELECTED DISK:" >>$LAYOUTS
 autodetect layoutparts >>$LAYOUTS
 echo -e "\n[*] Requiered\n[ ] Optional\n\nDEFAULTS:" >>$LAYOUTS
 
@@ -377,12 +377,12 @@ fi
 
 #------------------[ PACSTRAP AND FSTAB ]---------------------
 
-# Store log file
-#exec > $RPOINT/log/install_log.sh.$$ 2>&1
-
 clockfor="[*] Start Base Install"
 reverse_clock
 pacstrap $RPOINT $BASE 
+
+# Store log file
+exec > $RPOINT/log/install_log.sh.$$ 2>&1
 
 text g "\n[+] Updating FSTAB\n"
 genfstab -U $RPOINT >> $RPOINT/etc/fstab
