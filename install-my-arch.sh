@@ -198,7 +198,7 @@ while [[ $g = 0 ]]; do
   " [ ] Home" "Part:\Z4$HDISP\Zn | Size:\Z4$HSIZE\Zn | Mount:\Z4$HPOINT\Zn" \
   " [ ] Host" "Hostname:\Z4$HOST\Zn" \
   " [ ] Ntfs" "Data Partition:\Z4$MDISP\Zn | Size:\Z4$MSIZE\Zn | Mount:\Z4$MPOINT\Zn" \
-  " [ ] Kde" "Import custom files:\Z4$IMPORTFILES\Zn | Path:\Z4$IMPORTPATH\Zn" \
+  " [ ] Conf" "Import custom files:\Z4$IMPORTFILES\Zn | Path:\Z4$IMPORTPATH\Zn" \
   " [!] DONE" "\Zb\Z6NEXT STEP\Zn" \
   2>"${INPUT}"
   restart
@@ -334,6 +334,28 @@ INSTALL="pacman -S --color always --noconfirm"
 SEARCH="pacman -Ss --color always"
 
 clear
+
+# Create and mount root
+autodetect makedirs "$RPOINT" "Root"
+autodetect mountothers "$RDISP" "$RPOINT" "Root"
+# Create and mount boot
+autodetect makedirs "$BPOINT" "Boot"
+autodetect mountothers "$BDISP" "$BPOINT" "Boot"
+# Create and mount efi
+autodetect makedirs "$EPOINT" "Efi"
+autodetect mountothers "$EDISP" "$EPOINT" "Efi"
+# Check user before create and mount home
+if [[ -n $USR1 ]]; then
+ autodetect makedirs "$HPOINT" "home"
+ autodetect mountothers "$HDISP" "$HPOINT" "home"
+fi
+
+## TESTING: adjustments for specific aplications
+$CHR '[[ $(pacman -Qs wireshark-qt) ]] && text g "\n[+] Append $USR1 to Wireshark group" && usermod -a -G wireshark $USR1'
+$CHR '[[ $(pacman -Qs vmware-workstation) ]] && text g "\n[+] Load modules for vmware" && modprobe -a vmw_vmci vmmon'
+
+read
+exit
 
 clockfor="[*] Start Format... "
 reverse_clock
@@ -497,7 +519,7 @@ else
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > ~/.nanorc"
 fi
 
-# Drivers packages
+# Install drivers packages
 if [ $TYPEFLAG = "Native" ]; then
   clockfor="[!] Installing drivers for Native profile... "
   reverse_clock
@@ -513,8 +535,8 @@ else
 fi
 
 ## TESTING: adjustments for specific aplications
-[[ $(pacman -Qs wireshark-qt) ]] && text g "\n[+] Append $USR1 to Wireshark group" && usermod -a -G wireshark $USR1
-[[ $(pacman -Qs vmware-workstation) ]] && text g "\n[+] Load modules for vmware" && modprobe -a vmw_vmci vmmon
+$CHR '[[ $(pacman -Qs wireshark-qt) ]] && text g "\n[+] Append $USR1 to Wireshark group" && usermod -a -G wireshark $USR1'
+$CHR '[[ $(pacman -Qs vmware-workstation) ]] && text g "\n[+] Load modules for vmware" && modprobe -a vmw_vmci vmmon'
 
 #------------------[ UMOUNT AND REBOOT ]---------------------
 
