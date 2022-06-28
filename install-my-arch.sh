@@ -332,30 +332,7 @@ restart
 CHR="arch-chroot $RPOINT sh -c"
 INSTALL="pacman -S --color always --noconfirm"
 SEARCH="pacman -Ss --color always"
-
 clear
-
-# Create and mount root
-autodetect makedirs "$RPOINT" "Root"
-autodetect mountothers "$RDISP" "$RPOINT" "Root"
-# Create and mount boot
-autodetect makedirs "$BPOINT" "Boot"
-autodetect mountothers "$BDISP" "$BPOINT" "Boot"
-# Create and mount efi
-autodetect makedirs "$EPOINT" "Efi"
-autodetect mountothers "$EDISP" "$EPOINT" "Efi"
-# Check user before create and mount home
-if [[ -n $USR1 ]]; then
- autodetect makedirs "$HPOINT" "home"
- autodetect mountothers "$HDISP" "$HPOINT" "home"
-fi
-
-## TESTING: adjustments for specific aplications
-#$CHR '[[ $(pacman -Qs wireshark-qt) ]] && text g "\n[+] Append $USR1 to Wireshark group" && usermod -a -G wireshark $USR1'
-#$CHR '[[ $(pacman -Qs vmware-workstation) ]] && text g "\n[+] Load modules for vmware" && modprobe -a vmw_vmci vmmon'
-
-#read
-#exit
 
 clockfor="[*] Start Format... "
 reverse_clock
