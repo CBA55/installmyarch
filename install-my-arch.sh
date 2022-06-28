@@ -351,11 +351,11 @@ if [[ -n $USR1 ]]; then
 fi
 
 ## TESTING: adjustments for specific aplications
-$CHR '[[ $(pacman -Qs wireshark-qt) ]] && text g "\n[+] Append $USR1 to Wireshark group" && usermod -a -G wireshark $USR1'
-$CHR '[[ $(pacman -Qs vmware-workstation) ]] && text g "\n[+] Load modules for vmware" && modprobe -a vmw_vmci vmmon'
+#$CHR '[[ $(pacman -Qs wireshark-qt) ]] && text g "\n[+] Append $USR1 to Wireshark group" && usermod -a -G wireshark $USR1'
+#$CHR '[[ $(pacman -Qs vmware-workstation) ]] && text g "\n[+] Load modules for vmware" && modprobe -a vmw_vmci vmmon'
 
-read
-exit
+#read
+#exit
 
 clockfor="[*] Start Format... "
 reverse_clock
