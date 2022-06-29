@@ -511,10 +511,6 @@ else
   $CHR "systemctl enable vmtoolsd.service"
 fi
 
-## TESTING: adjustments for specific aplications
-$CHR '[[ $(pacman -Qs wireshark-qt) ]] && text g "\n[+] Append $USR1 to Wireshark group" && usermod -a -G wireshark $USR1'
-$CHR '[[ $(pacman -Qs vmware-workstation) ]] && text g "\n[+] Load modules for vmware" && modprobe -a vmw_vmci vmmon'
-
 #------------------[ UMOUNT AND REBOOT ]---------------------
 
   clockfor="[!] Desmontar y reiniciar en... "
