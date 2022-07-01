@@ -331,8 +331,6 @@ restart
 # Command shortcuts
 CHR="arch-chroot $RPOINT sh -c"
 INSTALL="pacman -S --color always --noconfirm"
-SEARCH="pacman -Ss --color always"
-clear
 
 clockfor="[*] Start Format... "
 reverse_clock
@@ -379,9 +377,6 @@ fi
 clockfor="[*] Start Base Install"
 reverse_clock
 pacstrap $RPOINT $BASE 
-
-# Store log file
-exec > $RPOINT/log/install_log.sh.$$ 2>&1
 
 text g "\n[+] Updating FSTAB\n"
 genfstab -U $RPOINT >> $RPOINT/etc/fstab
@@ -477,15 +472,17 @@ if [[ -n $USR1 ]]; then
   $CHR "git clone https://aur.archlinux.org/paru.git"
   $CHR "chown $USR1:users /paru;cd /paru;sudo -u $USR1 makepkg --noconfirm -sci"
   $CHR "rm -rf /paru"
-  PARUINSTALL="sudo -u $USR1 paru --noconfirm --color always -S"
+  PARUINSTALL="sudo -u $USR1 paru -S --color always --noconfirm"
   # Allow PARU without pass (temporary)
   #$CHR "echo -e '%wheel ALL=(ALL) NOPASSWD: /usr/bin/paru' >>/etc/sudoers"
   # OH-MY-ZSHELL + POWERLEVEL10K
   text g "\n[+] Installing and configure oh-my-zshell + powerlevel10k theme\n"
-  $CHR "sudo -u $USR1 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
-  $CHR "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  $CHR "$PARUINSTALL ttf-meslo-nerd-font-powerlevel10k"
-  $CHR "sudo -u $USR1 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+  $CHR "sudo -u $USR1 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
+  $CHR "sudo -u $USR1 sh -c git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+  $CHR "$PARUINSTALL zsh-theme-powerlevel10k-git ttf-meslo-nerd-font-powerlevel10k"
+  $CHR "sudo -u $USR1 echo 'source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc"
+  # Root
+  $CHR "echo 'source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc"
   # AUR packages
   clockfor="[!] Installing AUR packages\n"
   reverse_clock
