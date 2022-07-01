@@ -466,13 +466,13 @@ if [[ -n $USR1 ]]; then
   text g "\n[+] Activating syntax highlighting for nano\n"
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > /home/$USR1/.nanorc"
   $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc"
-  # AUR Helper 'Paru'
-  text g "\n[+] Installing Paru - AUR helper\n"
+  # AUR Helper 'YAY'
+  text g "\n[+] Installing AUR helper YAY\n"
   $CHR "$INSTALL git"
-  $CHR "git clone https://aur.archlinux.org/paru.git"
-  $CHR "chown $USR1:users /paru;cd /paru;sudo -u $USR1 makepkg --noconfirm -sci"
-  $CHR "rm -rf /paru"
-  PARUINSTALL="sudo -u $USR1 paru -S --color always --noconfirm"
+  $CHR "git clone https://aur.archlinux.org/yay.git"
+  $CHR "chown $USR1:users /yay;cd /yay;sudo -u $USR1 makepkg --noconfirm -sci"
+  $CHR "rm -rf /yay"
+  YAYINSTALL="sudo -u $USR1 yay -S --color always --noconfirm"
   # Allow PARU without pass (temporary)
   #$CHR "echo -e '%wheel ALL=(ALL) NOPASSWD: /usr/bin/paru' >>/etc/sudoers"
   # OH-MY-ZSHELL + POWERLEVEL10K
@@ -486,8 +486,8 @@ if [[ -n $USR1 ]]; then
   # AUR packages
   clockfor="[!] Installing AUR packages\n"
   reverse_clock
-  $CHR "paru -Sy"
-  $CHR "$PARUINSTALL $AUR1"
+  $CHR "yay -Sy"
+  $CHR "$YAYINSTALL $AUR1"
 else
   text g "\n[+] Activating syntax highlighting for nano\n"
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > ~/.nanorc"
