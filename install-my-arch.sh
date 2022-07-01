@@ -462,7 +462,7 @@ if [[ -n $USR1 ]]; then
   text g "\n[+] Setting password for $USR1\n"
   $CHR "echo $USR1:$PASS1 | chpasswd"
   text g "\n[+] Setting basic config for Sudo\n"
-  $CHR "sed -i '82 s/# *//' /etc/sudoers"
+  $CHR "sed -i '85 s/# *//' /etc/sudoers"
   text g "\n[+] Activating syntax highlighting for nano\n"
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > /home/$USR1/.nanorc"
   $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc"
@@ -476,13 +476,13 @@ if [[ -n $USR1 ]]; then
   # Allow PARU without pass (temporary)
   #$CHR "echo -e '%wheel ALL=(ALL) NOPASSWD: /usr/bin/paru' >>/etc/sudoers"
   # OH-MY-ZSHELL + POWERLEVEL10K
-  text g "\n[+] Installing and configure oh-my-zshell + powerlevel10k theme\n"
-  $CHR "sudo -u $USR1 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
-  $CHR "sudo -u $USR1 sh -c git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
-  $CHR "$PARUINSTALL zsh-theme-powerlevel10k-git ttf-meslo-nerd-font-powerlevel10k"
-  $CHR "sudo -u $USR1 echo 'source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc"
+  #text g "\n[+] Installing and configure oh-my-zshell + powerlevel10k theme\n"
+  #$CHR "sudo -u $USR1 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
+  #$CHR "sudo -u $USR1 sh -c git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+  #$CHR "$YAYINSTALL zsh-theme-powerlevel10k-git ttf-meslo-nerd-font-powerlevel10k"
+  #$CHR "sudo -u $USR1 echo 'source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc"
   # Root
-  $CHR "echo 'source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc"
+  #$CHR "echo 'source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc"
   # AUR packages
   clockfor="[!] Installing AUR packages\n"
   reverse_clock
