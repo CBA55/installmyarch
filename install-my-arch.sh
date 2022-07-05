@@ -1,7 +1,8 @@
 #!/bin/bash +x
-# Unnatended Archlinux Installer - by Sebastian Sanchez Baldoncini
+# Script de Instalacion desatendida de Archlinux 
+# Autor: Sebastian Sanchez Baldoncini
 # -------------------------------
-# Store menu options selected by the user
+# Guardar opcion seleccionada
 INPUT=/tmp/menu.sh.$$
 
 # Storage files with display info
@@ -144,7 +145,7 @@ fi
 autodetect devs >$OUTPUT
 while [[ -z $PDISP ]]; do
   # Select device to partition
-  PDISP=$(dialog --colors --clear --backtitle "UNNATENDED ARCHLINUX INSTALLER - STEP 1/5" \
+  PDISP=$(dialog --colors --clear --backtitle "INSTALACION ARCHLINUX 1/5" \
   --title "\Z7[ SELECT STORAGE DEVICE ]\Zn" \
   --ok-label OK \
   --nocancel \
