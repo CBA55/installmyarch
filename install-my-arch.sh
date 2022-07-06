@@ -1,6 +1,6 @@
 #!/bin/bash +x
 #
-# Script de Instalacion desatendida de Archlinux 
+# Script bash para instalar Archlinux de manera desantendida, utilizando dialog para generar la interfaz gráfica
 # Autor: Sebastian Sanchez Baldoncini
 # ----------------------------------------------
 
