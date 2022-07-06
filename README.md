@@ -1,6 +1,6 @@
 # install-my-arch
 
-*Instalador desatendido de Archlinux (con GUI)*
+*Script **bash** para instalar Archlinux de manera desantendida, utilizando **dialog** para generar la interfaz gráfica*
 
 ### Instrucciones de uso
 
