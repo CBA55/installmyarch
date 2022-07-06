@@ -1,22 +1,23 @@
 # install-my-arch
 
-# Instalador desatendido de Archlinux (con GUI)
+Instalador desatendido de Archlinux (con GUI)
 
-# Instrucciones de uso:
+Instrucciones de uso
+--------------------
 
-Una vez iniciado el medio de instalacion, actualizar repositorios e instalar git
+Una vez iniciado archlinux desde el medio de instalacion, actualizar repositorios e instalar git:
 
 `pacman -sy git`
 
-Clonar el repositorio
+Clonar el repositorio:
 
 `git clone https://github.com/CBA55/install-my-arch`
 
-Entrar al directorio
+Entrar al directorio:
 
 `cd install-my-arch`
 
-ejecutar script
+ejecutar script:
 
 `./install-my-arch`
 
