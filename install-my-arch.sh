@@ -248,17 +248,17 @@ while [[ $g = 0 ]]; do
   # Continuar según la opción seleccionada
   case $menuitem in
     " [*] Flag")
-      TYPEFLAG=$(dialog --colors --clear --title "\Z7[ INSTALL PROFILE ]\Zn" \
+      TYPEFLAG=$(dialog --colors --clear --title "\Z7[ PERFIL DE INSTALACION ]\Zn" \
       --yes-button "VMWARE" \
       --no-button "NATIVE" \
-      --yesno "\n This will install drivers and services consequently." 7 65 \
+      --yesno "\n Instalar paquetes y drivers para:." 7 65 \
       3>&1 1>&2 2>&3 3>&- \
       )
       [[ $? = 0 ]] && TYPEFLAG="Vmware"
       [[ $? = 1 ]] && TYPEFLAG="Native"
       EFIFLAG=$(dialog --colors --clear --backtitle "" \
-      --title "\Z7[ EFI FORMAT ]\Zn" \
-      --yesno "\n If efi partition is shared with other/s OS, chose No" 7 65 \
+      --title "\Z7[ FORMATEAR PARTICIÓN EFI ]\Zn" \
+      --yesno "\nSi la partición efi se comparte con otro/s SO, elejir 'no'" 7 65 \
       3>&1 1>&2 2>&3 3>&- \
       )
       [[ $? = 0 ]] && EFIFLAG="Yes"
@@ -266,35 +266,35 @@ while [[ $g = 0 ]]; do
       ;;
     " [*] Boot")
       autodetect parts >$PARTS
-      BDISP=$(display radio "SELECT BOOT DEVICE")
-      BPOINT=$(display input "BOOT MOUNT POINT" "$BPOINT")
+      BDISP=$(display radio "SLECCIONAR PARTICIÓN BOOT")
+      BPOINT=$(display input "PUNTO DE MONTAJE" "$BPOINT")
       BSIZE=$(autodetect size_show $BDISP)
       ;;
     " [*] Efi")
       autodetect parts >$PARTS
-      EDISP=$(display radio "SELECT EFI DEVICE")
+      EDISP=$(display radio "SELECCIONAR PARTICIÓN EFI")
       ESIZE=$(autodetect size_show $EDISP)
-      EPOINT=$(display input "EFI MOUNT POINT" "$EPOINT")
+      EPOINT=$(display input "PUNTO DE MONTAJE" "$EPOINT")
       ;;
     " [*] Root")
-      RDISP=$(display radio "SELECT ROOT PARTITION")
+      RDISP=$(display radio "SELECCIONAR PARTICIÓN ROOT")
       RSIZE=$(autodetect size_show $RDISP)
       ;;
     " [*] Pass")
       declare -i i=0
       while [[ $i = 0 ]]; do
-        PASS=$(display pass "ROOT USER PASSWORD" "Enter ROOT password:")  
-        PASSCHK=$(display pass "ROOT USER PASSWORD" "Retype ROOT password:")
+        PASS=$(display pass "CONTRASEÑA DE USUARIO ROOT" "Ingresar contraseña:")  
+        PASSCHK=$(display pass "CONTRASEÑA DE USUARIO ROOT" "Confirmar contraseña:")
         display check $PASS $PASSCHK 0
       done
       ;;
     " [ ] User")
-      USR1=$(display input "ENTER USER NAME" "$USR1" "\nEmpty chain will skip user account and home dir creation\n")
+      USR1=$(display input "INGRESAR NOMBRE DE USUARIO" "$USR1" "\nDejar en blanco para omitir creación de la cuenta y directorio home\n")
       if [[ -n $USR1 ]]; then
         declare -i i=0
         while [[ $i = 0 ]]; do
-          PASS1=$(display pass "USER PASSWORD" "Enter $USR1 password:")  
-          PASS1CHK=$(display pass "USER PASSWORD" "Retype $USR1 password:")
+          PASS1=$(display pass "CONTRASEÑA DE USUARIO" "Ingresar contraseña para el usuario $USR1:")  
+          PASS1CHK=$(display pass "CONTRASEÑA DE USUARIO" "Confirmar contraseña para el usuario $USR1:")
           display check $PASS1 $PASS1CHK 1
         done
         HPOINT="$RPOINT/home"
@@ -304,29 +304,29 @@ while [[ $g = 0 ]]; do
       ;;
     " [ ] Home")
       if [[ -n $USR1 ]]; then
-        HDISP=$(display radio "SELECT HOME PARTITION")
+        HDISP=$(display radio "SELECCIONAR PARTICIÓN HOME")
         HSIZE=$(autodetect size_show $HDISP)
       else
-       display error "Please set USER first"
+       display error "Configurar nombre de usuario primero"
       fi
       ;;
     " [ ] Host")
-      HOST=$(display input "ENTER HOSTNAME" "$HOST")
+      HOST=$(display input "INGRESAR NOMBRE DE USUARIO" "$HOST")
       ;;
     " [ ] Ntfs")
       autodetect parts >$PARTS
-      MDISP=$(display radio "SELECT DATA PARTITION")
-      MPOINT=$(display input "DATA MOUNT POINT" "$MPOINT")
+      MDISP=$(display radio "SELECCIONAR PARTICIÓN DE DATOS")
+      MPOINT=$(display input "PUNTO DE MONTAJE" "$MPOINT")
       MSIZE=$(autodetect size_show $MDISP)
       ;;
     " [ ] Kde")
-      IMPORTFILES=$(dialog --colors --clear --title "\Z7[ CUSTOMIZE KDE ]\Zn" \
-      --yesno "\n This will import custom files." 7 65 \
+      IMPORTFILES=$(dialog --colors --clear --title "\Z7[ PERSONALIZAR PLASMA-KDE ]\Zn" \
+      --yesno "\n Importar archivos de configuración." 7 65 \
       3>&1 1>&2 2>&3 3>&- \
       )
       [[ $? = 0 ]] && IMPORTFILES="Yes"
       [[ $? = 1 ]] && IMPORTFILES="No"
-      IMPORTPATH=$(display input "IMPORT PATH" "$IMPORTPATH")
+      IMPORTPATH=$(display input "RUTA PARA IMPORTAR ARCHIVOS" "$IMPORTPATH")
       ;;
     " [!] DONE")
       g=1
@@ -337,37 +337,37 @@ done
 # Ventana para seleccionar paquetes de los repositorios oficiales (core, extra y community)
 PAC1=$(dialog --colors --clear --backtitle "INSTALADOR DE ARCHLINUX - PASO 3/5" \
 --no-items \
---title "\Z7[ COMMUNITY PACKAGES ]\Zn" \
+--title "\Z7[ PAQUETES DE REPOSITORIOS OFICIALES ]\Zn" \
 --nocancel \
---checklist "\nSelect packages:" 0 0 0 $(while read line; do echo $line; done <$COM) \
+--checklist "\nSeleccionar paquetes para instalar:" 0 0 0 $(while read line; do echo $line; done <$COM) \
 3>&1 1>&2 2>&3 3>&- \
 )
 
 # Ventana para seleccionar paquetes AUR del repositorio 'multilib'
 AUR1=$(dialog --colors --clear --backtitle "INSTALADOR DE ARCHLINUX - PASO 4/5" \
 --no-items \
---title "\Z7[ AUR PACKAGES ]\Zn" \
+--title "\Z7[ PAQUETES AUR DE REPOSITORIO MULTILIB ]\Zn" \
 --nocancel \
---checklist "\nSelect packages:" 0 0 0 $(while read line; do echo $line; done <$AUR) \
+--checklist "\nSeleccionar paquetes:" 0 0 0 $(while read line; do echo $line; done <$AUR) \
 3>&1 1>&2 2>&3 3>&- \
 )
 
-# Settings Resume
+# Resumen de los parámetros configurados para la instalación
 dialog --colors --clear --backtitle "INSTALADOR DE ARCHLINUX - PASO 5/5" \
 --title "\Z7[ RESUMEN ]\Zn" \
 --yes-label "INSTALAR" \
 --no-label "REINICIAR" \
 --yesno \
 "\nPARAMETROS REQUERIDOS:\n
-Flag | Install Profile:\Z4$TYPEFLAG\Zn | Import Custom Config:\Z4$IMPORTFILES\Zn\n
-Boot | Partition:\Z4$BDISP\Zn | Size:\Z4$BSIZE\Zn | Mount:\Z4$BPOINT\Zn\n
- Efi | Partition:\Z4$EDISP\Zn | Size:\Z4$ESIZE\Zn | Mount:\Z4$EPOINT\Zn | Format:\Z4$EFIFLAG\Zn\n
-Root | Root Partition:\Z4$RDISP\Zn | Size:\Z4$RSIZE\Zn | Root pass:\Z4$PASSFLAG\Zn\n
+Flag | Perfil de instalacón:\Z4$TYPEFLAG\Zn | Importar configuración:\Z4$IMPORTFILES\Zn\n
+Boot | Partition:\Z4$BDISP\Zn | Tamaño:\Z4$BSIZE\Zn | Montar:\Z4$BPOINT\Zn\n
+ Efi | Partition:\Z4$EDISP\Zn | Tamaño:\Z4$ESIZE\Zn | Montar:\Z4$EPOINT\Zn | Formatear:\Z4$EFIFLAG\Zn\n
+Root | Partición:\Z4$RDISP\Zn | Tamaño:\Z4$RSIZE\Zn | Contraseña:\Z4$PASSFLAG\Zn\n
 \nPARAMETROS OPCIONALES:\n
-Host | Hostname:\Z4$HOST\Zn\n
-User | Username:\Z4$USR1\Zn | $USR1 pass:\Z4$PASS1FLAG\Zn\n
-Home | Home Partition:\Z4$HDISP\Zn | Size:\Z4$HSIZE\Zn | Mount:\Z4$HPOINT\Zn\n
-Data | Data Partition:\Z4$MDISP\Zn | Size:\Z4$MSIZE\Zn | Mount:\Z4$MPOINT\Zn\n\n" 0 0
+Host | Nombre de host:\Z4$HOST\Zn\n
+User | Nombre de usuario:\Z4$USR1\Zn | Contraseña de $USR1:\Z4$PASS1FLAG\Zn\n
+Home | Partición:\Z4$HDISP\Zn | Tamaño:\Z4$HSIZE\Zn | Montar:\Z4$HPOINT\Zn\n
+Data | Partición:\Z4$MDISP\Zn | Tamaño:\Z4$MSIZE\Zn | Montar:\Z4$MPOINT\Zn\n\n" 0 0
 # Función para el botón 'REINICIAR'
 restart
 
@@ -380,7 +380,7 @@ INSTALL="pacman -S --color always --noconfirm"
 # Nota: verificar particiones montadas en este punto
 
 # Cuenta regresiva para formatear particiones
-clockfor="[*] Voy a formatear las particiones"
+clockfor="[*] Formatear particiones en: "
 reverse_clock
 
 # Formatear partición root
@@ -395,7 +395,7 @@ tune2fs -L arch /dev/$BDISP
 
 # Formatear la partición efi (o continuar sin formatear)
 [[ $EFIFLAG = "Yes" ]] && text g "\n[+] Formateando partición efi: $EDISP\n" && mkfs.vfat -F 32 /dev/$EDISP
-[[ $EFIFLAG = "No" ]] && text y "\n[+] La partición efi NO se formateará\n" 
+[[ $EFIFLAG = "No" ]] && text y "\n[+] Omitiendo formato de la partición efi\n" 
 
 # Si se configuró usuario, formatear la particion home
 if [[ -n $USR1 ]]; then
@@ -405,7 +405,7 @@ fi
 
 #------------------[ CHECK DIRS AND MOUNT ]---------------------
 
-clockfor="[*] Motando particiones"
+clockfor="[*] Montar particiones en: "
 reverse_clock
 
 # Crear directorio y montar partición root
@@ -429,7 +429,7 @@ fi
 #------------------[ INSTALACIÓN DE PAQUETES BASE + FSTAB ]---------------------
 
 # Cuenta regresiva para instalar paquetes base
-clockfor="[*] Comienza la instalación de los paquetes base"
+clockfor="[*] Instalar paquetes base con 'pacstrap' en: "
 reverse_clock
 
 # Instalar paquetes base en punto de montaje elegido para la raiz
@@ -445,7 +445,7 @@ genfstab -U $RPOINT >> $RPOINT/etc/fstab
 #------------------[ INICIO DE SESION CHROOT ]---------------------
 
 # Cuenta regresiva para iniciar la sesion chroot
-clockfor="[*] Comenzando la sesión chroot en $RPOINT"
+clockfor="[*] Comenzar la sesión chroot en: "
 reverse_clock
 
 text g "\n[+] Configurando zona horaria\n"
@@ -466,7 +466,7 @@ $CHR "echo KEYMAP=la-latin1 >> /etc/vconsole.conf"
 
 # Si se configuro nombre de host, guardar en /etc/hostname
 if [[ -n $HOST ]]; then
-  text g "\n[+] Setting hostname: $HOST\n"
+  text g "\n[+] Configurando nombre de host como: $HOST\n"
   $CHR "echo $HOST > /etc/hostname"
 fi
 
@@ -487,7 +487,7 @@ text g "\n[+] Activando el cortafuegos con la configuración por defecto\n"
 $CHR "cp /etc/iptables/simple_firewall.rules /etc/iptables/iptables.rules"
 $CHR "systemctl enable iptables"
 
-text g "\n[+] Actualizando base de repositorios\n"
+text g "\n[+] Actualizando repositorios\n"
 $CHR "pacman -Sy"
 
 text g "\n[+] Instalando paquetes 'xorg'\n"
@@ -504,7 +504,7 @@ $CHR "$INSTALL $ENV"
 text g "\n[+] Activando servicio de SDDM\n"
 $CHR "systemctl enable sddm"
 
-text g "\n[+] Activando servicio para administración de redes\n"
+text g "\n[+] Activando servicio para la administración de redes\n"
 $CHR "systemctl enable NetworkManager"
 
 text g "\n[+] Instalando bootloader (refind)\n"
@@ -513,70 +513,66 @@ $CHR "refind-install"
 _BPOINT=$(echo "$BPOINT" | sed 's/[/]mnt//g')
 $CHR "sed -i 's/archisobasedir=arch/ro root=\/dev\/$RDISP/g' $_BPOINT/refind_linux.conf"
 
-clockfor="[!] Installing community packages selected... "
+clockfor="[!] Instalar paquetes de repositorios oficiales en: "
 reverse_clock
 $CHR "$INSTALL $PAC1"
 
-# User account
+# Si la variable de usuario no está vacía, realizar lo siguiente:
 if [[ -n $USR1 ]]; then
-  text g "\n[+] Creating user $USR1 with common groups\n"
+  text g "\n[+] Creando cuenta de usuario\n"
+  # Crear usuario con home, agreagar a grupo primario y suplementarios, establecer zshell como shell por defecto
   $CHR "useradd -m -g users -G wheel,power,storage,input -s /bin/zsh $USR1"
-  text g "\n[+] Setting password for $USR1\n"
+  text g "\n[+] Configurando contraseña del usuario $USR1\n"
   $CHR "echo $USR1:$PASS1 | chpasswd"
-  text g "\n[+] Setting basic config for Sudo\n"
+  text g "\n[+] Agregando permisos de configuracion de sistema en sudoers\n"
   $CHR "sed -i '85 s/# *//' /etc/sudoers"
-  text g "\n[+] Activating syntax highlighting for nano\n"
+  text g "\n[+] Activando color de sintaxis para 'nano' (usuario $USR1)\n"
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > /home/$USR1/.nanorc"
   $CHR "ln -s /home/$USR1/.nanorc ~/.nanorc"
-  # AUR Helper 'YAY'
-  text g "\n[+] Installing AUR helper YAY\n"
+   text g "\n[+] Instalando ayudante de AUR 'yay' (descargar y compilar paquetes)\n"
   $CHR "$INSTALL git"
   $CHR "git clone https://aur.archlinux.org/yay.git"
   $CHR "chown $USR1:users /yay;cd /yay;sudo -u $USR1 makepkg --noconfirm -sci"
   $CHR "rm -rf /yay"
   YAYINSTALL="sudo -u $USR1 yay -S --color always --noconfirm"
-  # Allow PARU without pass (temporary)
+  # Permitir paru sin contraseña (temporalmente)
   #$CHR "echo -e '%wheel ALL=(ALL) NOPASSWD: /usr/bin/paru' >>/etc/sudoers"
   # OH-MY-ZSHELL + POWERLEVEL10K
-  #text g "\n[+] Installing and configure oh-my-zshell + powerlevel10k theme\n"
+  #text g "\n[+] Instalando y configurando oh-my-zshell + tema powerlevel10k\n"
   #$CHR "sudo -u $USR1 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)""
   #$CHR "sudo -u $USR1 sh -c git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
   #$CHR "$YAYINSTALL zsh-theme-powerlevel10k-git ttf-meslo-nerd-font-powerlevel10k"
   #$CHR "sudo -u $USR1 echo 'source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc"
   # Root
   #$CHR "echo 'source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc"
-  # AUR packages
-  clockfor="[!] Installing AUR packages\n"
+  # Paquetes AUR
+  clockfor="[!] Instalar paquetes AUR seleccionados en: "
   reverse_clock
   $CHR "yay -Sy"
   $CHR "$YAYINSTALL $AUR1"
 else
-  text g "\n[+] Activating syntax highlighting for nano\n"
+  text g "\n[+] Activando color de sintaxis para 'nano' (usuario root)\n"
   $CHR "find /usr/share/nano/ -iname "*.nanorc" -exec echo include {} \; > ~/.nanorc"
 fi
 
-# Install drivers packages
+# Instalar paquetes de drivers segun perfil de instalación seleccionado
 if [ $TYPEFLAG = "Native" ]; then
-  clockfor="[!] Installing drivers for Native profile... "
+  clockfor="[!] Instalar drivers para perfil de instalación 'nativo' en: "
   reverse_clock
   $CHR "$INSTALL $DVRNATIVE"
-  text g "\n[+] Enable Bluetooth service\n"
+  text g "\n[+] Activando autoinicio del servicio 'bluetooth'\n"
   $CHR "systemctl enable bluetooth"
 else
-  clockfor="[!] Installing drivers for Vmware profile... "
+  clockfor="[!] Instalar drivers para perfil de instalación 'vmware' en: "
   reverse_clock
   $CHR "$INSTALL $DVRVMWARE"
-  text g "\n[+] Enable vmtool service\n"
+  text g "\n[+] Activando autoinicio del servcio de vmware 'vmtools'\n"
   $CHR "systemctl enable vmtoolsd.service"
 fi
 
-#------------------[ UMOUNT AND REBOOT ]---------------------
+#------------------[ DESMONTAR PARTICIONES Y REINICIAR ]---------------------
 
-  clockfor="[!] Desmontar y reiniciar en... "
+  clockfor="[!] Desmontar y reiniciar en: "
   reverse_clock
   umount -R $RPOINT
   reboot
-
-# If temp files found, delete
-#[ -f $OUTPUT ] && rm $OUTPUT
-#[ -f $INPUT ] && rm $INPUT
