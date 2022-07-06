@@ -7,7 +7,7 @@ Una vez iniciado el medio de instalacion, actualizar repositorios e instalar git
 pacman -sy git
 
 Clonar el repositorio
-git clone https://github.com/CBA55/install-my-arch
+´git clone https://github.com/CBA55/install-my-arch´
 
 Entrar al directorio
 cd install-my-arch
