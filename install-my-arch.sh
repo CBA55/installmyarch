@@ -49,8 +49,8 @@ function display()
       elif [ $2 != $3 ]; then
         display error "Las contraseñas no coinciden"
       else
-        [[ $4 = 0 ]] && PASSFLAG="Established"; i=1
-        [[ $4 = 1 ]] && PASS1FLAG="Established"; i=1
+        [[ $4 = 0 ]] && PASSFLAG="Configurada"; i=1
+        [[ $4 = 1 ]] && PASS1FLAG="Configurada"; i=1
       fi
       ;;
     input)
@@ -59,14 +59,14 @@ function display()
       --title "\Z7[ $2 ]\Zn" \
       --ok-label OK \
       --nocancel \
-      --inputbox "$4\nDefault:" 0 0 "$3" \
+      --inputbox "$4\nPor defecto:" 0 0 "$3" \
       3>&1 1>&2 2>&3 3>&- \
       ;;
     radio)
       # Ventana para seleccionar opcion
       dialog --colors --clear \
       --title "\Z7[ $2 ]\Zn" \
-      --radiolist "\nUse [SPACEBAR] for Select:" 0 0 0 \
+      --radiolist "\nSeleccionar con [SPACEBAR]" 0 0 0 \
       $(while read line; do echo $line; done <$PARTS) \
       3>&1 1>&2 2>&3 3>&- \
       ;;
