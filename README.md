@@ -1,9 +1,9 @@
 # install-my-arch
 
 Instalador desatendido de Archlinux (con GUI)
-
+-
 Instrucciones de uso
---------------------
+-
 
 Una vez iniciado archlinux desde el medio de instalacion, actualizar repositorios e instalar git:
 
