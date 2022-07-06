@@ -1,6 +1,6 @@
 # install-my-arch
 
-## Instalador desatendido de Archlinux (con GUI)
+*Instalador desatendido de Archlinux (con GUI)*
 
 ### Instrucciones de uso
 
