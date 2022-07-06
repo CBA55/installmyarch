@@ -3,6 +3,7 @@
 # Autor: Sebastian Sanchez Baldoncini
 # -------------------------------
 # Guardar opcion seleccionada
+#
 #INPUT=/tmp/menu.sh.$$
 
 # Storage files with display info
