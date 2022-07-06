@@ -1,4 +1,5 @@
 #!/bin/bash +x
+#
 # Script de Instalacion desatendida de Archlinux 
 # Autor: Sebastian Sanchez Baldoncini
 # ----------------------------------------------
