@@ -1,7 +1,7 @@
 #!/bin/bash +x
 #
-# Script bash para instalar Archlinux de manera desantendida, utilizando dialog para generar la interfaz gráfica
-# Autor: Sebastian Sanchez Baldoncini
+# Script bash para instalar Archlinux de manera desantendida
+# Autor: Sebastián Sanchez Baldoncini
 # ----------------------------------------------
 
 # Guardar info para mostrar en menu
@@ -24,7 +24,7 @@ BASE="base base-devel linux linux-firmware linux-headers man man-pages"
 # Paquetes para instalacion nativa o vm (nota: automatizar)
 DVRVMWARE="xf86-video-vmware xf86-input-vmmouse open-vm-tools"
 DVRNATIVE="xf86-video-intel pulseaudio pulseaudio-bluetooth"
-# Paquetes de entorno grafico
+# Paquetes de entorno gráfico
 ENV="sddm plasma-meta konsole dolphin dolphin-plugins ark"
 
 # Funcion para 'Dialog' (GUI)
@@ -32,7 +32,7 @@ function display()
 {
   case $1 in
     error)
-      # Ventana de error standar
+      # Ventana de error
       dialog --colors --title "\Z1[ ERROR ]" \
       --ok-label RETRY --msgbox "\n\Zb\Z1[!] $2" 7 45
       ;;
