@@ -16,7 +16,7 @@ Entrar al directorio:
 
 `cd install-my-arch`
 
-ejecutar script:
+Ejecutar script:
 
 `./install-my-arch`
 
