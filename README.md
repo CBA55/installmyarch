@@ -4,9 +4,9 @@
 
 ### Instrucciones de uso
 
-Una vez iniciado archlinux desde el medio de instalacion, actualizar repositorios e instalar git:
+Una vez iniciado archlinux desde el medio de instalación, actualizar repositorios e instalar git:
 
-`pacman -sy git`
+`pacman -Sy git`
 
 Clonar el repositorio:
 
